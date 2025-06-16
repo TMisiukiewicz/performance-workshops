@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
   View,
@@ -8,26 +9,36 @@ import {
   TextInput,
   StyleSheet,
 } from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from './types';
+import {useAppSelector, useAppDispatch} from '../hooks';
+import {
+  selectCount,
+  increment,
+  selectItemByIdSlow,
+  selectBooks,
+} from '../store';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+const ListItem = ({id}: {id: string}) => {
+  const data = useAppSelector(state => selectItemByIdSlow(state, id));
+  const books = useAppSelector(selectBooks);
+  console.log('books', books);
+  const dispatch = useAppDispatch();
+  return (
+    <View style={styles.row}>
+      <Image source={{uri: data.image}} style={styles.image} />
+      <Text>{data.title}</Text>
+      <Button title="Inc" onPress={() => dispatch(increment())} />
+    </View>
+  );
+};
 
-const bigData = Array.from({length: 1000}, (_, i) => ({
-  id: i.toString(),
-  title: `Item ${i}`,
-  image: 'https://picsum.photos/600/400?random=' + i,
-}));
-
-export default function HomeScreen({navigation}: Props) {
+export default function HomeScreen() {
+  const navigation = useNavigation();
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(0);
+  const count = useAppSelector(selectCount);
+  const books = useAppSelector(selectBooks);
+  const dispatch = useAppDispatch();
 
-  // Heavy computation in render
-  let sum = 0;
-  for (let i = 0; i < 10000000; i++) {
-    sum += i;
-  }
+  const booksIDsToDisplay = Array.from({length: 1000}, (_, i) => i.toString());
 
   return (
     <View style={styles.flex1}>
@@ -36,7 +47,7 @@ export default function HomeScreen({navigation}: Props) {
         value={search}
         onChangeText={text => {
           setSearch(text);
-          setCount(count + 1); // Unnecessary state update
+          dispatch(increment());
         }}
         placeholder="Search (does nothing, but triggers re-render)"
         style={styles.input}
@@ -50,17 +61,10 @@ export default function HomeScreen({navigation}: Props) {
         onPress={() => navigation.navigate('Settings')}
       />
       <FlatList
-        data={bigData}
-        renderItem={({item}) => (
-          <View style={styles.row}>
-            <Image source={{uri: item.image}} style={styles.image} />
-            <Text>{item.title}</Text>
-            <Button title="Inc" onPress={() => setCount(count + 1)} />
-          </View>
-        )}
+        data={books}
+        renderItem={({item}) => <ListItem id={item.id} />}
         // No keyExtractor, no getItemLayout, no memoization, inline renderItem
       />
-      <Text style={styles.centered}>Sum: {sum}</Text>
       <Text style={styles.centered}>Count: {count}</Text>
     </View>
   );
