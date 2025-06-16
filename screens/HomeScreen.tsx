@@ -8,18 +8,34 @@ import {
   TextInput,
   StyleSheet,
 } from 'react-native';
-import {useAppSelector, useAppDispatch} from '../hooks';
-import {selectCount, increment, selectBookById} from '../store';
+import {useAppSelector} from '../hooks';
+import {
+  selectBookById,
+  selectAuthorById,
+  selectCommentsByBookId,
+} from '../store';
 
 const booksIDsToDisplay = Array.from({length: 3500}, (_, i) =>
   i.toString(),
 ).sort(() => Math.random() - 0.5);
 
-const ListItem = ({id}: {id: string}) => {
+const BookListItem = ({id}: {id: string}) => {
   const book = useAppSelector(state => selectBookById(state, id));
+  const authorName = useAppSelector(
+    state => selectAuthorById(state, book?.authorId ?? '')?.name,
+  );
+  const comments = useAppSelector(state => selectCommentsByBookId(state, id));
+  const lastComment = comments[comments.length - 1];
   return (
-    <View style={styles.row}>
-      <Text>{book?.title}</Text>
+    <View style={styles.card}>
+      <View style={styles.info}>
+        <Text style={styles.title}>{book?.title}</Text>
+        <Text style={styles.author}>{authorName}</Text>
+        <Text style={styles.comment}>
+          {lastComment?.author}: {lastComment?.content?.slice(0, 30)}
+          {lastComment?.content?.length > 30 ? '…' : ''}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -27,8 +43,6 @@ const ListItem = ({id}: {id: string}) => {
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [search, setSearch] = useState('');
-  const count = useAppSelector(selectCount);
-  const dispatch = useAppDispatch();
 
   return (
     <View style={styles.flex1}>
@@ -37,7 +51,6 @@ export default function HomeScreen() {
         value={search}
         onChangeText={text => {
           setSearch(text);
-          dispatch(increment());
         }}
         placeholder="Search (does nothing, but triggers re-render)"
         style={styles.input}
@@ -52,19 +65,60 @@ export default function HomeScreen() {
       />
       <FlatList
         data={booksIDsToDisplay}
-        renderItem={({item}) => <ListItem id={item} />}
-        // No keyExtractor, no getItemLayout, no memoization, inline renderItem
+        renderItem={({item}) => <BookListItem id={item} />}
+        keyExtractor={item => item}
+        contentContainerStyle={{paddingVertical: 8}}
       />
-      <Text style={styles.centered}>Count: {count}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   flex1: {flex: 1},
-  title: {fontSize: 24, textAlign: 'center', margin: 8},
   input: {borderWidth: 1, margin: 8, padding: 8},
-  row: {flexDirection: 'row', alignItems: 'center', margin: 8},
-  image: {width: 120, height: 80, marginRight: 12},
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: {width: 0, height: 2},
+    elevation: 3, // Android shadow
+    alignItems: 'center',
+  },
+  cover: {
+    width: 64,
+    height: 96,
+    borderRadius: 8,
+    marginRight: 16,
+    backgroundColor: '#eee',
+  },
+  info: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#222',
+    marginBottom: 2,
+  },
+  author: {
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 6,
+  },
+  comment: {
+    fontSize: 13,
+    color: '#444',
+    fontStyle: 'italic',
+    backgroundColor: '#f6f6f6',
+    padding: 6,
+    borderRadius: 6,
+  },
   centered: {textAlign: 'center', margin: 8},
 });
