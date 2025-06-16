@@ -1,5 +1,13 @@
 import React, {useState} from 'react';
-import {View, Text, Button, FlatList, Image, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  FlatList,
+  Image,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './types';
 
@@ -22,10 +30,8 @@ export default function HomeScreen({navigation}: Props) {
   }
 
   return (
-    <View style={{flex: 1}}>
-      <Text style={{fontSize: 24, textAlign: 'center', margin: 8}}>
-        Home Screen
-      </Text>
+    <View style={styles.flex1}>
+      <Text style={styles.title}>Home Screen</Text>
       <TextInput
         value={search}
         onChangeText={text => {
@@ -33,7 +39,7 @@ export default function HomeScreen({navigation}: Props) {
           setCount(count + 1); // Unnecessary state update
         }}
         placeholder="Search (does nothing, but triggers re-render)"
-        style={{borderWidth: 1, margin: 8, padding: 8}}
+        style={styles.input}
       />
       <Button
         title="Go to Profile"
@@ -46,19 +52,25 @@ export default function HomeScreen({navigation}: Props) {
       <FlatList
         data={bigData}
         renderItem={({item}) => (
-          <View style={{flexDirection: 'row', alignItems: 'center', margin: 8}}>
-            <Image
-              source={{uri: item.image}}
-              style={{width: 120, height: 80, marginRight: 12}}
-            />
+          <View style={styles.row}>
+            <Image source={{uri: item.image}} style={styles.image} />
             <Text>{item.title}</Text>
             <Button title="Inc" onPress={() => setCount(count + 1)} />
           </View>
         )}
         // No keyExtractor, no getItemLayout, no memoization, inline renderItem
       />
-      <Text style={{textAlign: 'center', margin: 8}}>Sum: {sum}</Text>
-      <Text style={{textAlign: 'center', margin: 8}}>Count: {count}</Text>
+      <Text style={styles.centered}>Sum: {sum}</Text>
+      <Text style={styles.centered}>Count: {count}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  flex1: {flex: 1},
+  title: {fontSize: 24, textAlign: 'center', margin: 8},
+  input: {borderWidth: 1, margin: 8, padding: 8},
+  row: {flexDirection: 'row', alignItems: 'center', margin: 8},
+  image: {width: 120, height: 80, marginRight: 12},
+  centered: {textAlign: 'center', margin: 8},
+});
