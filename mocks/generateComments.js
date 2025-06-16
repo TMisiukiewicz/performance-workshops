@@ -8,8 +8,8 @@ for (let bookId = 0; bookId < 5000; bookId++) {
   const numComments = faker.number.int({ min: 1, max: 10 });
   for (let i = 0; i < numComments; i++) {
     comments.push({
-      id: commentId++,
-      bookId,
+      id: commentId.toString(),
+      bookId: bookId.toString(),
       author: faker.person.fullName(),
       content: faker.lorem.sentence(),
     });

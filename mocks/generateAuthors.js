@@ -2,7 +2,7 @@ const fs = require('fs');
 const { faker } = require('@faker-js/faker');
 
 const authors = Array.from({ length: 3000 }, (_, i) => ({
-  id: i + 1,
+  id: (i + 1).toString(),
   name: faker.person.fullName(),
 }));
 

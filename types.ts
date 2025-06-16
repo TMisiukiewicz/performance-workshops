@@ -1,17 +1,17 @@
 export interface Book {
   id: string;
   title: string;
-  authorId: number;
+  authorId: string;
 }
 
 export interface Author {
-  id: number;
+  id: string;
   name: string;
 }
 
 export interface Comment {
-  id: number;
-  bookId: number;
+  id: string;
+  bookId: string;
   author: string;
   content: string;
 }
