@@ -50,7 +50,14 @@ export const store = configureStore({
   },
 });
 
+/** Books selectors */
 export const selectBooks = (state: RootState): Book[] => state.books;
+
+export const selectBookById = (
+  state: RootState,
+  id: string,
+): Book | undefined => state.books.find(book => book.id === id);
+
 export const selectAuthors = (state: RootState): Author[] => state.authors;
 export const selectComments = (state: RootState): Comment[] => state.comments;
 export const selectCount = (state: RootState): number => state.bigData.count;

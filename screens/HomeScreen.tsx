@@ -5,28 +5,21 @@ import {
   Text,
   Button,
   FlatList,
-  Image,
   TextInput,
   StyleSheet,
 } from 'react-native';
 import {useAppSelector, useAppDispatch} from '../hooks';
-import {
-  selectCount,
-  increment,
-  selectItemByIdSlow,
-  selectBooks,
-} from '../store';
+import {selectCount, increment, selectBookById} from '../store';
+
+const booksIDsToDisplay = Array.from({length: 3500}, (_, i) =>
+  i.toString(),
+).sort(() => Math.random() - 0.5);
 
 const ListItem = ({id}: {id: string}) => {
-  const data = useAppSelector(state => selectItemByIdSlow(state, id));
-  const books = useAppSelector(selectBooks);
-  console.log('books', books);
-  const dispatch = useAppDispatch();
+  const book = useAppSelector(state => selectBookById(state, id));
   return (
     <View style={styles.row}>
-      <Image source={{uri: data.image}} style={styles.image} />
-      <Text>{data.title}</Text>
-      <Button title="Inc" onPress={() => dispatch(increment())} />
+      <Text>{book?.title}</Text>
     </View>
   );
 };
@@ -35,10 +28,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [search, setSearch] = useState('');
   const count = useAppSelector(selectCount);
-  const books = useAppSelector(selectBooks);
   const dispatch = useAppDispatch();
-
-  const booksIDsToDisplay = Array.from({length: 1000}, (_, i) => i.toString());
 
   return (
     <View style={styles.flex1}>
@@ -61,8 +51,8 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate('Settings')}
       />
       <FlatList
-        data={books}
-        renderItem={({item}) => <ListItem id={item.id} />}
+        data={booksIDsToDisplay}
+        renderItem={({item}) => <ListItem id={item} />}
         // No keyExtractor, no getItemLayout, no memoization, inline renderItem
       />
       <Text style={styles.centered}>Count: {count}</Text>
