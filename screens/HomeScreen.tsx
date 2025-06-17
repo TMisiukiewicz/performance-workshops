@@ -53,7 +53,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.flex1}>
-      <Text style={styles.title}>Home Screen</Text>
       <TextInput
         value={search}
         onChangeText={text => {
