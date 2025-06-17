@@ -1,23 +1,13 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  Button,
-  FlatList,
-  TextInput,
-  StyleSheet,
-} from 'react-native';
+import React, {useState, useMemo} from 'react';
+import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {
+  selectBooks,
+  selectAuthors,
   selectBookById,
   selectAuthorById,
   selectCommentsByBookId,
 } from '../store';
-
-const booksIDsToDisplay = Array.from({length: 3500}, (_, i) =>
-  i.toString(),
-).sort(() => Math.random() - 0.5);
 
 const BookListItem = ({id}: {id: string}) => {
   const book = useAppSelector(state => selectBookById(state, id));
@@ -41,8 +31,25 @@ const BookListItem = ({id}: {id: string}) => {
 };
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
   const [search, setSearch] = useState('');
+  const books = useAppSelector(selectBooks);
+  const authors = useAppSelector(selectAuthors);
+
+  const filteredBookIds = useMemo(() => {
+    if (!search.trim()) {
+      return books.map(book => book.id);
+    }
+    const lower = search.toLowerCase();
+    return books
+      .filter(book => {
+        const author = authors.find(a => a.id === book.authorId);
+        return (
+          book.title.toLowerCase().includes(lower) ||
+          (author && author.name.toLowerCase().includes(lower))
+        );
+      })
+      .map(book => book.id);
+  }, [search, books, authors]);
 
   return (
     <View style={styles.flex1}>
@@ -52,19 +59,11 @@ export default function HomeScreen() {
         onChangeText={text => {
           setSearch(text);
         }}
-        placeholder="Search (does nothing, but triggers re-render)"
+        placeholder="Search by book or author"
         style={styles.input}
       />
-      <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate('Profile')}
-      />
-      <Button
-        title="Go to Settings"
-        onPress={() => navigation.navigate('Settings')}
-      />
       <FlatList
-        data={booksIDsToDisplay}
+        data={filteredBookIds}
         renderItem={({item}) => <BookListItem id={item} />}
         keyExtractor={item => item}
         contentContainerStyle={{paddingVertical: 8}}
@@ -76,7 +75,21 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   flex1: {flex: 1},
-  input: {borderWidth: 1, margin: 8, padding: 8},
+  input: {
+    borderWidth: 1,
+    borderColor: '#b0b4c1',
+    margin: 12,
+    padding: 14,
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    fontSize: 17,
+    color: '#222',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: {width: 0, height: 2},
+    elevation: 3,
+  },
   card: {
     flexDirection: 'row',
     backgroundColor: '#fff',
