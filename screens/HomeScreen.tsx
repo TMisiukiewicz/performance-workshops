@@ -1,5 +1,14 @@
 import React, {useState, useMemo} from 'react';
-import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {
   selectBooks,
@@ -32,6 +41,7 @@ const BookListItem = ({id}: {id: string}) => {
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
+  const [devPanelVisible, setDevPanelVisible] = useState(false);
   const books = useAppSelector(selectBooks);
   const authors = useAppSelector(selectAuthors);
 
@@ -68,6 +78,37 @@ export default function HomeScreen() {
         contentContainerStyle={{paddingVertical: 8}}
         initialNumToRender={1000}
       />
+      {/* Floating Debug Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setDevPanelVisible(true)}
+        activeOpacity={0.7}>
+        <Text style={styles.fabIcon}>🐞</Text>
+      </TouchableOpacity>
+      {/* Dev Panel Modal */}
+      <Modal
+        visible={devPanelVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setDevPanelVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.devPanel}>
+            <Text style={styles.devPanelTitle}>Dev Panel</Text>
+            <Pressable
+              style={styles.devPanelClose}
+              onPress={() => setDevPanelVisible(false)}>
+              <Text style={{fontSize: 18}}>✕</Text>
+            </Pressable>
+            {/* Placeholder actions */}
+            <TouchableOpacity style={styles.devPanelAction}>
+              <Text>Placeholder Action 1</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.devPanelAction}>
+              <Text>Placeholder Action 2</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -88,6 +129,56 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: {width: 0, height: 2},
     elevation: 3,
+  },
+  fab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 32,
+    backgroundColor: '#222',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    shadowOffset: {width: 0, height: 4},
+    elevation: 8,
+    zIndex: 100,
+  },
+  fabIcon: {
+    fontSize: 28,
+    color: '#fff',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.18)',
+    justifyContent: 'flex-end',
+  },
+  devPanel: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    padding: 24,
+    minHeight: 180,
+    elevation: 12,
+    position: 'relative',
+  },
+  devPanelTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 18,
+  },
+  devPanelClose: {
+    position: 'absolute',
+    right: 18,
+    top: 18,
+    padding: 8,
+    zIndex: 10,
+  },
+  devPanelAction: {
+    paddingVertical: 12,
   },
   card: {
     flexDirection: 'row',
