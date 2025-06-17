@@ -4,6 +4,7 @@ const authors: Author[] = require('./mocks/authors.json');
 const comments: Comment[] = require('./mocks/comments.json');
 
 import {configureStore, createSlice, createSelector} from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -26,11 +27,34 @@ const commentsSlice = createSlice({
   reducers: {},
 });
 
+const settingsSlice = createSlice({
+  name: 'settings',
+  initialState: {
+    devPanelEnabled: false,
+    fabEnabled: true,
+  },
+  reducers: {
+    toggleDevPanel: state => {
+      state.devPanelEnabled = !state.devPanelEnabled;
+    },
+    toggleFab: state => {
+      state.fabEnabled = !state.fabEnabled;
+      AsyncStorage.setItem('fabEnabled', JSON.stringify(state.fabEnabled));
+    },
+    setFabEnabled: (state, action) => {
+      state.fabEnabled = action.payload;
+    },
+  },
+});
+
+export const {toggleDevPanel, toggleFab, setFabEnabled} = settingsSlice.actions;
+
 export const store = configureStore({
   reducer: {
     books: booksSlice.reducer,
     authors: authorsSlice.reducer,
     comments: commentsSlice.reducer,
+    settings: settingsSlice.reducer,
   },
 });
 
@@ -55,3 +79,10 @@ export const selectCommentsByBookId = createSelector(
   (allComments, bookId) =>
     Object.values(allComments).filter(comment => comment.bookId === bookId),
 );
+
+/** Settings selectors */
+export const selectDevPanelEnabled = (state: RootState): boolean =>
+  state.settings.devPanelEnabled;
+
+export const selectFabEnabled = (state: RootState): boolean =>
+  state.settings.fabEnabled;

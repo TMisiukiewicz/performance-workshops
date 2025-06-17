@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import StartScreen from './screens/StartScreen';
@@ -7,38 +7,79 @@ import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {Provider} from 'react-redux';
-import {store} from './store';
+import {useAppSelector, useAppDispatch} from './hooks';
+import {store, selectFabEnabled, setFabEnabled} from './store';
 import DevPanel from './components/DevPanel';
+import HeaderMenu from './components/HeaderMenu';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+function AppContent() {
   const [devPanelVisible, setDevPanelVisible] = useState(false);
+  const fabEnabled = useAppSelector(selectFabEnabled);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const loadFabSetting = async () => {
+      try {
+        const savedSetting = await AsyncStorage.getItem('fabEnabled');
+        if (savedSetting !== null) {
+          dispatch(setFabEnabled(JSON.parse(savedSetting)));
+        }
+      } catch (error) {
+        console.log('Error loading FAB setting:', error);
+      }
+    };
+    loadFabSetting();
+  }, [dispatch]);
 
   return (
-    <Provider store={store}>
-      <View style={{flex: 1}}>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Start">
-            <Stack.Screen name="Start" component={StartScreen} />
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-        {/* Floating Debug Button */}
+    <View style={{flex: 1}}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Start">
+          <Stack.Screen
+            name="Start"
+            component={StartScreen}
+            options={{
+              title: 'Performance Workshop',
+              headerRight: () => <HeaderMenu />,
+            }}
+          />
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              title: 'Books',
+              headerRight: () => <HeaderMenu />,
+            }}
+          />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+      {/* Floating Debug Button - only show if enabled */}
+      {fabEnabled && (
         <TouchableOpacity
           style={appStyles.fab}
           onPress={() => setDevPanelVisible(true)}
           activeOpacity={0.7}>
           <Text style={appStyles.fabIcon}>🐞</Text>
         </TouchableOpacity>
-        {/* Dev Panel */}
-        <DevPanel
-          visible={devPanelVisible}
-          onClose={() => setDevPanelVisible(false)}
-        />
-      </View>
+      )}
+      {/* Dev Panel */}
+      <DevPanel
+        visible={devPanelVisible}
+        onClose={() => setDevPanelVisible(false)}
+      />
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <Provider store={store}>
+      <AppContent />
     </Provider>
   );
 }

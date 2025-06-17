@@ -1,23 +1,52 @@
 import React from 'react';
-import {View, Text, Button, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {View, Text, Switch, StyleSheet} from 'react-native';
+import {useAppSelector, useAppDispatch} from '../hooks';
+import {selectFabEnabled, toggleFab} from '../store';
 
 const SettingsScreen = () => {
-  const navigation = useNavigation();
+  const dispatch = useAppDispatch();
+  const fabEnabled = useAppSelector(selectFabEnabled);
+
   return (
-    <View style={styles.centered}>
-      <Text>Settings Screen</Text>
-      <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
-      <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate('Profile')}
-      />
+    <View style={styles.container}>
+      <Text style={styles.title}>Settings</Text>
+      <View style={styles.setting}>
+        <Text style={styles.settingLabel}>Show Debug FAB</Text>
+        <Switch
+          value={fabEnabled}
+          onValueChange={_value => {
+            dispatch(toggleFab());
+          }}
+          trackColor={{false: '#767577', true: '#81b0ff'}}
+          thumbColor={fabEnabled ? '#f5dd4b' : '#f4f3f4'}
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  centered: {flex: 1, alignItems: 'center', justifyContent: 'center'},
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  setting: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  settingLabel: {
+    fontSize: 16,
+    color: '#333',
+  },
 });
 
 export default SettingsScreen;

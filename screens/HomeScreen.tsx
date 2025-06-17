@@ -1,14 +1,5 @@
 import React, {useState, useMemo} from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-} from 'react-native';
+import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {
   selectBooks,
@@ -41,7 +32,6 @@ const BookListItem = ({id}: {id: string}) => {
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
-  const [devPanelVisible, setDevPanelVisible] = useState(false);
   const books = useAppSelector(selectBooks);
   const authors = useAppSelector(selectAuthors);
 
@@ -78,37 +68,6 @@ export default function HomeScreen() {
         contentContainerStyle={{paddingVertical: 8}}
         initialNumToRender={1000}
       />
-      {/* Floating Debug Button */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => setDevPanelVisible(true)}
-        activeOpacity={0.7}>
-        <Text style={styles.fabIcon}>🐞</Text>
-      </TouchableOpacity>
-      {/* Dev Panel Modal */}
-      <Modal
-        visible={devPanelVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setDevPanelVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.devPanel}>
-            <Text style={styles.devPanelTitle}>Dev Panel</Text>
-            <Pressable
-              style={styles.devPanelClose}
-              onPress={() => setDevPanelVisible(false)}>
-              <Text style={{fontSize: 18}}>✕</Text>
-            </Pressable>
-            {/* Placeholder actions */}
-            <TouchableOpacity style={styles.devPanelAction}>
-              <Text>Placeholder Action 1</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.devPanelAction}>
-              <Text>Placeholder Action 2</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
