@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import StartScreen from './screens/StartScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -19,7 +20,8 @@ export default function App() {
       <View style={{flex: 1}}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Start">
-            <Stack.Screen name="Start" component={HomeScreen} />
+            <Stack.Screen name="Start" component={StartScreen} />
+            <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>
