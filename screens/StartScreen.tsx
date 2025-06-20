@@ -8,11 +8,10 @@ const StartScreen = () => {
     <View style={styles.centered}>
       <Text style={styles.emoji}>🚀</Text>
       <Text style={styles.title}>Performance Workshop</Text>
-      <Text style={styles.subtitle}>Welcome! Ready to break React Native?</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Home')}>
-        <Text style={styles.buttonText}>Start</Text>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
     </View>
   );
