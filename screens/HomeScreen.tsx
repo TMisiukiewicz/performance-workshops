@@ -9,6 +9,34 @@ export default function HomeScreen() {
   const books = useAppSelector(selectBooks);
   const authors = useAppSelector(selectAuthors);
 
+  const favoriteBookIds = useAppSelector(
+    state => state.favorites.favoriteBookIds,
+  );
+
+  const favoritesProcessingData = useMemo(() => {
+    const favoriteBooks = favoriteBookIds
+      .map(id => books.find(book => book.id === id))
+      .filter(Boolean);
+
+    const favoriteAuthors = favoriteBooks.map(book => {
+      const author = authors.find(a => a.id === book?.authorId);
+      return author?.name
+        .toLowerCase()
+        .split('')
+        .reverse()
+        .join('')
+        .toUpperCase();
+    });
+
+    const favoriteStats = {
+      count: favoriteBookIds.length,
+      authorsSet: new Set(favoriteBooks.map(b => b?.authorId)),
+      processedAt: Date.now(),
+    };
+
+    return {favoriteBooks, favoriteAuthors, favoriteStats};
+  }, [favoriteBookIds, books, authors]);
+
   const filteredBookIds = useMemo(() => {
     if (!search.trim()) {
       return books.map(book => book.id);
@@ -30,9 +58,10 @@ export default function HomeScreen() {
       total: books.length,
       filtered: filteredBookIds.length,
       searchActive: !!search.trim(),
+      favorites: favoritesProcessingData.favoriteStats.count,
     };
     return stats;
-  }, [books, filteredBookIds, search]);
+  }, [books, filteredBookIds, search, favoritesProcessingData]);
 
   return (
     <View style={styles.flex1}>
@@ -45,7 +74,8 @@ export default function HomeScreen() {
         style={styles.input}
       />
       <Text style={styles.centered}>
-        Showing {bookStats.filtered} of {bookStats.total} books
+        Showing {bookStats.filtered} of {bookStats.total} books | ❤️{' '}
+        {bookStats.favorites} favorites
       </Text>
       <FlatList
         data={filteredBookIds}
