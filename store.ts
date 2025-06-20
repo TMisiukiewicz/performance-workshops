@@ -31,7 +31,7 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState: {
     devPanelEnabled: false,
-    fabEnabled: true,
+    fabEnabled: false,
   },
   reducers: {
     toggleDevPanel: state => {
