@@ -48,7 +48,7 @@ const HeaderMenu = () => {
                   setMenuVisible(false);
                   navigation.navigate('Profile');
                 }}>
-                <Text style={styles.menuItemText}>Profile</Text>
+                <Text style={styles.menuItemText}>Favorites</Text>
               </TouchableOpacity>
             </View>
           </Pressable>

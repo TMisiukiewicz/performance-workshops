@@ -3,7 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import StartScreen from './screens/StartScreen';
 import HomeScreen from './screens/HomeScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import FavoritesScreen from './screens/FavoritesScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {Provider} from 'react-redux';
@@ -66,7 +66,11 @@ function AppContent() {
               headerRight: () => <HeaderMenu />,
             }}
           />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen
+            name="Profile"
+            component={FavoritesScreen}
+            options={{title: 'Favorites'}}
+          />
           <Stack.Screen name="Settings" component={SettingsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
