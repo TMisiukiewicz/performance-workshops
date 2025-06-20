@@ -5,34 +5,6 @@ import {useAppSelector} from '../hooks';
 import {selectBooks, selectAuthors} from '../store';
 import BookListItem from '../components/BookListItem';
 
-const AuthorListItem = ({authorId}: {authorId: string}) => {
-  const books = useAppSelector(selectBooks);
-  const author = useAppSelector(state =>
-    selectAuthors(state).find(a => a.id === authorId),
-  );
-  const favoriteBookIds = useAppSelector(
-    state => state.favorites.favoriteBookIds,
-  );
-
-  const authorBooks = useMemo(() => {
-    return books.filter(
-      book => book.authorId === authorId && favoriteBookIds.includes(book.id),
-    );
-  }, [books, authorId, favoriteBookIds]);
-
-  return (
-    <View style={styles.authorCard}>
-      <Text style={styles.authorName}>{author?.name}</Text>
-      <Text style={styles.authorStats}>
-        {authorBooks.length} favorite book{authorBooks.length !== 1 ? 's' : ''}
-      </Text>
-      <Text style={styles.bookTitles}>
-        {authorBooks.map(book => book.title).join(', ')}
-      </Text>
-    </View>
-  );
-};
-
 const BooksRoute = () => {
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
@@ -65,19 +37,34 @@ const AuthorsRoute = () => {
     state => state.favorites.favoriteBookIds,
   );
   const books = useAppSelector(selectBooks);
+  const authors = useAppSelector(selectAuthors);
 
-  // Get unique author IDs from favorite books
-  const favoriteAuthorIds = useMemo(() => {
+  // Get author data with their favorite books
+  const authorsWithBooks = useMemo(() => {
     const authorIds = favoriteBookIds
       .map(bookId => {
         const book = books.find(b => b.id === bookId);
         return book?.authorId;
       })
       .filter((id): id is string => Boolean(id));
-    return [...new Set(authorIds)];
-  }, [favoriteBookIds, books]);
 
-  if (favoriteAuthorIds.length === 0) {
+    const uniqueAuthorIds = [...new Set(authorIds)];
+
+    return uniqueAuthorIds.map(authorId => {
+      const author = authors.find(a => a.id === authorId);
+      const authorBooks = books.filter(
+        book => book.authorId === authorId && favoriteBookIds.includes(book.id),
+      );
+
+      return {
+        authorId,
+        authorName: author?.name || 'Unknown Author',
+        books: authorBooks,
+      };
+    });
+  }, [favoriteBookIds, books, authors]);
+
+  if (authorsWithBooks.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>👨‍💼</Text>
@@ -89,11 +76,31 @@ const AuthorsRoute = () => {
     );
   }
 
+  const renderAuthorWithBooks = ({
+    item,
+  }: {
+    item: (typeof authorsWithBooks)[0];
+  }) => (
+    <View>
+      <View style={styles.authorCard}>
+        <View style={styles.authorInfo}>
+          <Text style={styles.authorName}>{item.authorName}</Text>
+          <Text style={styles.bookCount}>{item.books.length}</Text>
+        </View>
+      </View>
+      <View style={styles.booksList}>
+        {item.books.map(book => (
+          <BookListItem key={book.id} id={book.id} />
+        ))}
+      </View>
+    </View>
+  );
+
   return (
     <FlatList
-      data={favoriteAuthorIds}
-      renderItem={({item}) => <AuthorListItem authorId={item} />}
-      keyExtractor={item => item}
+      data={authorsWithBooks}
+      renderItem={renderAuthorWithBooks}
+      keyExtractor={item => item.authorId}
       contentContainerStyle={{paddingVertical: 8}}
     />
   );
@@ -183,21 +190,31 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
+  authorInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   authorName: {
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 4,
+    flex: 1,
   },
-  authorStats: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
+  bookCount: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#007AFF',
+    backgroundColor: '#e8f4fd',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    minWidth: 32,
+    textAlign: 'center',
   },
-  bookTitles: {
-    fontSize: 14,
-    color: '#444',
-    lineHeight: 20,
+  booksList: {
+    gap: 4,
   },
   emptyContainer: {
     flex: 1,
