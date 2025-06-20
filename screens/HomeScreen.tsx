@@ -8,6 +8,7 @@ import {
   selectAuthorById,
   selectCommentsByBookId,
 } from '../store';
+import {formatDate} from '../utils';
 
 const BookListItem = ({id}: {id: string}) => {
   const book = useAppSelector(state => selectBookById(state, id));
@@ -16,11 +17,19 @@ const BookListItem = ({id}: {id: string}) => {
   );
   const comments = useAppSelector(state => selectCommentsByBookId(state, id));
   const lastComment = comments[comments.length - 1];
+
   return (
     <View style={styles.card}>
       <View style={styles.info}>
         <Text style={styles.title}>{book?.title}</Text>
         <Text style={styles.author}>{authorName}</Text>
+        <Text style={styles.date}>
+          Published:{' '}
+          {book?.publishedDate ? formatDate(book.publishedDate) : 'Unknown'}
+        </Text>
+        <Text style={styles.lastRead}>
+          Last read: {book?.lastRead ? formatDate(book.lastRead) : 'Never'}
+        </Text>
         <Text style={styles.comment}>
           {lastComment?.author}: {lastComment?.content?.slice(0, 30)}
           {lastComment?.content?.length > 30 ? '…' : ''}
@@ -173,6 +182,16 @@ const styles = StyleSheet.create({
   author: {
     fontSize: 14,
     color: '#888',
+    marginBottom: 4,
+  },
+  date: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+  },
+  lastRead: {
+    fontSize: 12,
+    color: '#666',
     marginBottom: 6,
   },
   comment: {
