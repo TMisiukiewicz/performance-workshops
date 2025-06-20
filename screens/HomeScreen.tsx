@@ -60,6 +60,15 @@ export default function HomeScreen() {
       .map(book => book.id);
   }, [search, books, authors]);
 
+  const bookStats = useMemo(() => {
+    const stats = {
+      total: books.length,
+      filtered: filteredBookIds.length,
+      searchActive: !!search.trim(),
+    };
+    return stats;
+  }, [books, filteredBookIds, search]);
+
   return (
     <View style={styles.flex1}>
       <TextInput
@@ -70,6 +79,9 @@ export default function HomeScreen() {
         placeholder="Search by book or author"
         style={styles.input}
       />
+      <Text style={styles.centered}>
+        Showing {bookStats.filtered} of {bookStats.total} books
+      </Text>
       <FlatList
         data={filteredBookIds}
         renderItem={({item}) => <BookListItem id={item} />}
