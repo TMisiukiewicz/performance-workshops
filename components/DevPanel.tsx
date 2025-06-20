@@ -1,13 +1,15 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
   Modal,
   Pressable,
-  TouchableOpacity,
   StyleSheet,
   Animated,
+  Switch,
 } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {startProfiling, stopProfiling} from 'react-native-release-profiler';
 
 interface DevPanelProps {
   visible: boolean;
@@ -16,6 +18,7 @@ interface DevPanelProps {
 
 export default function DevPanel({visible, onClose}: DevPanelProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [isProfiling, setIsProfiling] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -32,6 +35,34 @@ export default function DevPanel({visible, onClose}: DevPanelProps) {
       }).start();
     }
   }, [visible, fadeAnim]);
+
+  const toggleProfiling = async () => {
+    if (isProfiling) {
+      // Stop profiling
+      try {
+        const profilePath = await stopProfiling(true);
+        setIsProfiling(false);
+        // Extract directory path without filename
+        const dirPath = profilePath.substring(0, profilePath.lastIndexOf('/'));
+        Clipboard.setString(dirPath);
+        console.log(
+          'Profiling stopped. Directory path copied to clipboard:',
+          dirPath,
+        );
+      } catch (error) {
+        console.error('Failed to stop profiling:', error);
+      }
+    } else {
+      // Start profiling
+      try {
+        startProfiling();
+        setIsProfiling(true);
+        console.log('Profiling started');
+      } catch (error) {
+        console.error('Failed to start profiling:', error);
+      }
+    }
+  };
 
   if (!visible) {
     return null;
@@ -50,13 +81,22 @@ export default function DevPanel({visible, onClose}: DevPanelProps) {
             <Pressable style={styles.devPanelClose} onPress={onClose}>
               <Text style={{fontSize: 18}}>✕</Text>
             </Pressable>
-            {/* Placeholder actions */}
-            <TouchableOpacity style={styles.devPanelAction}>
-              <Text>Placeholder Action 1</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.devPanelAction}>
-              <Text>Placeholder Action 2</Text>
-            </TouchableOpacity>
+
+            <View style={styles.profilingSection}>
+              <Text style={styles.sectionTitle}>Performance Profiling</Text>
+
+              <View style={styles.switchContainer}>
+                <Text style={styles.switchLabel}>
+                  {isProfiling ? '🔴 Recording' : '⚪ Stopped'}
+                </Text>
+                <Switch
+                  value={isProfiling}
+                  onValueChange={toggleProfiling}
+                  trackColor={{false: '#767577', true: '#81b0ff'}}
+                  thumbColor={isProfiling ? '#007AFF' : '#f4f3f4'}
+                />
+              </View>
+            </View>
           </View>
         </View>
       </Modal>
@@ -99,7 +139,24 @@ const styles = StyleSheet.create({
     padding: 8,
     zIndex: 10,
   },
-  devPanelAction: {
-    paddingVertical: 12,
+  profilingSection: {
+    marginTop: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 16,
+    color: '#333',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+  },
+  switchLabel: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
   },
 });
