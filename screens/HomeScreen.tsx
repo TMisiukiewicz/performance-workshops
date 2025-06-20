@@ -82,7 +82,7 @@ export default function HomeScreen() {
         renderItem={({item}) => <BookListItem id={item} />}
         keyExtractor={item => item}
         contentContainerStyle={{paddingVertical: 8}}
-        initialNumToRender={1000}
+        initialNumToRender={500}
       />
     </View>
   );

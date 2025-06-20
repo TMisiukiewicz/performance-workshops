@@ -39,38 +39,34 @@ const AuthorsRoute = () => {
   const books = useAppSelector(selectBooks);
   const authors = useAppSelector(selectAuthors);
 
-  // Get author data with their favorite books
+  // Get all authors with their favorite books, sorted by favorite count
   const authorsWithBooks = useMemo(() => {
-    const authorIds = favoriteBookIds
-      .map(bookId => {
-        const book = books.find(b => b.id === bookId);
-        return book?.authorId;
+    return authors
+      .map(author => {
+        const authorBooks = books.filter(
+          book =>
+            book.authorId === author.id && favoriteBookIds.includes(book.id),
+        );
+        const totalBooks = books.filter(book => book.authorId === author.id);
+
+        return {
+          authorId: author.id,
+          authorName: author.name,
+          books: authorBooks,
+          totalBooksCount: totalBooks.length,
+        };
       })
-      .filter((id): id is string => Boolean(id));
-
-    const uniqueAuthorIds = [...new Set(authorIds)];
-
-    return uniqueAuthorIds.map(authorId => {
-      const author = authors.find(a => a.id === authorId);
-      const authorBooks = books.filter(
-        book => book.authorId === authorId && favoriteBookIds.includes(book.id),
-      );
-
-      return {
-        authorId,
-        authorName: author?.name || 'Unknown Author',
-        books: authorBooks,
-      };
-    });
+      .filter(author => author.totalBooksCount > 0) // Filter out authors with 0 books
+      .sort((a, b) => b.books.length - a.books.length); // Sort by favorite count descending
   }, [favoriteBookIds, books, authors]);
 
   if (authorsWithBooks.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>👨‍💼</Text>
-        <Text style={styles.emptyTitle}>No favorite authors yet</Text>
+        <Text style={styles.emptyTitle}>No authors found</Text>
         <Text style={styles.emptySubtitle}>
-          Add some books to your favorites to see their authors here
+          Something went wrong loading the authors
         </Text>
       </View>
     );
@@ -85,7 +81,10 @@ const AuthorsRoute = () => {
       <View style={styles.authorCard}>
         <View style={styles.authorInfo}>
           <Text style={styles.authorName}>{item.authorName}</Text>
-          <Text style={styles.bookCount}>{item.books.length}</Text>
+          <View style={styles.countsContainer}>
+            <Text style={styles.bookCount}>{item.books.length}</Text>
+            <Text style={styles.totalCount}>/ {item.totalBooksCount}</Text>
+          </View>
         </View>
       </View>
       <View style={styles.booksList}>
@@ -194,13 +193,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
   },
   authorName: {
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
     flex: 1,
+  },
+  countsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   bookCount: {
     fontSize: 16,
@@ -212,6 +214,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     minWidth: 32,
     textAlign: 'center',
+  },
+  totalCount: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 4,
   },
   booksList: {
     gap: 4,
