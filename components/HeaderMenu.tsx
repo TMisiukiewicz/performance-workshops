@@ -38,17 +38,17 @@ const HeaderMenu = () => {
                 style={styles.menuItem}
                 onPress={() => {
                   setMenuVisible(false);
-                  navigation.navigate('Settings');
+                  navigation.navigate('Profile');
                 }}>
-                <Text style={styles.menuItemText}>Settings</Text>
+                <Text style={styles.menuItemText}>Favorites</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.menuItem}
                 onPress={() => {
                   setMenuVisible(false);
-                  navigation.navigate('Profile');
+                  navigation.navigate('Settings');
                 }}>
-                <Text style={styles.menuItemText}>Favorites</Text>
+                <Text style={styles.menuItemText}>Settings</Text>
               </TouchableOpacity>
             </View>
           </Pressable>
