@@ -1,22 +1,37 @@
 import React, {useState, useMemo} from 'react';
-import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
-import {useAppSelector} from '../hooks';
+import {
+  View,
+  Text,
+  FlatList,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import {useAppSelector, useAppDispatch} from '../hooks';
 import {
   selectBooks,
   selectAuthors,
   selectBookById,
   selectAuthorById,
   selectCommentsByBookId,
+  selectIsBookFavorite,
+  toggleFavorite,
 } from '../store';
 import {formatDate} from '../utils';
 
 const BookListItem = ({id}: {id: string}) => {
+  const dispatch = useAppDispatch();
   const book = useAppSelector(state => selectBookById(state, id));
   const authorName = useAppSelector(
     state => selectAuthorById(state, book?.authorId ?? '')?.name,
   );
   const comments = useAppSelector(state => selectCommentsByBookId(state, id));
   const lastComment = comments[comments.length - 1];
+  const isFavorite = useAppSelector(state => selectIsBookFavorite(state, id));
+
+  const handleToggleFavorite = () => {
+    dispatch(toggleFavorite(id));
+  };
 
   return (
     <View style={styles.card}>
@@ -35,6 +50,12 @@ const BookListItem = ({id}: {id: string}) => {
           {lastComment?.content?.length > 30 ? '…' : ''}
         </Text>
       </View>
+
+      <TouchableOpacity
+        style={styles.favoriteButton}
+        onPress={handleToggleFavorite}>
+        <Text style={styles.favoriteIcon}>{isFavorite ? '❤️' : '🤍'}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -213,6 +234,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f6f6',
     padding: 6,
     borderRadius: 6,
+  },
+  favoriteButton: {
+    position: 'absolute',
+    right: 12,
+    top: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  favoriteIcon: {
+    fontSize: 20,
   },
   centered: {textAlign: 'center', margin: 8},
 });

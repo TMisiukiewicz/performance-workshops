@@ -8,7 +8,12 @@ import SettingsScreen from './screens/SettingsScreen';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {Provider} from 'react-redux';
 import {useAppSelector, useAppDispatch} from './hooks';
-import {store, selectFabEnabled, setFabEnabled} from './store';
+import {
+  store,
+  selectFabEnabled,
+  setFabEnabled,
+  setFavoriteBookIds,
+} from './store';
 import DevPanel from './components/DevPanel';
 import HeaderMenu from './components/HeaderMenu';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,17 +26,24 @@ function AppContent() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const loadFabSetting = async () => {
+    const loadSettings = async () => {
       try {
-        const savedSetting = await AsyncStorage.getItem('fabEnabled');
-        if (savedSetting !== null) {
-          dispatch(setFabEnabled(JSON.parse(savedSetting)));
+        // Load FAB setting
+        const savedFabSetting = await AsyncStorage.getItem('fabEnabled');
+        if (savedFabSetting !== null) {
+          dispatch(setFabEnabled(JSON.parse(savedFabSetting)));
+        }
+
+        // Load favorite books
+        const savedFavorites = await AsyncStorage.getItem('favoriteBookIds');
+        if (savedFavorites !== null) {
+          dispatch(setFavoriteBookIds(JSON.parse(savedFavorites)));
         }
       } catch (error) {
-        console.log('Error loading FAB setting:', error);
+        console.log('Error loading settings:', error);
       }
     };
-    loadFabSetting();
+    loadSettings();
   }, [dispatch]);
 
   return (
