@@ -1,10 +1,13 @@
 const fs = require('fs');
 const {faker} = require('@faker-js/faker');
 
+const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Romance', 'Sci-Fi', 'Fantasy', 'Biography', 'History', 'Philosophy', 'Poetry'];
+
 const bigData = Array.from({ length: 5000 }, (_, i) => ({
   id: i.toString(),
   title: faker.book.title(),
   authorId: faker.number.int({ min: 1, max: 3000 }).toString(),
+  genre: faker.helpers.arrayElement(genres),
   publishedDate: faker.date.between({ from: '1900-01-01', to: '2023-12-31' }).toISOString(),
   lastRead: faker.date.between({ from: '2020-01-01', to: '2024-12-31' }).toISOString(),
 }));

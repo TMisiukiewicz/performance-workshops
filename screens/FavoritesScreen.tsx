@@ -39,6 +39,181 @@ const AuthorsRoute = () => {
   const books = useAppSelector(selectBooks);
   const authors = useAppSelector(selectAuthors);
 
+  const getCountryFlag = (country: string) => {
+    const countryFlags: Record<string, string> = {
+      'United States': '🇺🇸',
+      'United Kingdom': '🇬🇧',
+      Canada: '🇨🇦',
+      Australia: '🇦🇺',
+      Germany: '🇩🇪',
+      France: '🇫🇷',
+      Italy: '🇮🇹',
+      Spain: '🇪🇸',
+      Japan: '🇯🇵',
+      China: '🇨🇳',
+      India: '🇮🇳',
+      Brazil: '🇧🇷',
+      Russia: '🇷🇺',
+      Mexico: '🇲🇽',
+      Argentina: '🇦🇷',
+      Chile: '🇨🇱',
+      Colombia: '🇨🇴',
+      Peru: '🇵🇪',
+      Venezuela: '🇻🇪',
+      Ecuador: '🇪🇨',
+      Uruguay: '🇺🇾',
+      Paraguay: '🇵🇾',
+      Bolivia: '🇧🇴',
+      Netherlands: '🇳🇱',
+      Belgium: '🇧🇪',
+      Switzerland: '🇨🇭',
+      Austria: '🇦🇹',
+      Poland: '🇵🇱',
+      'Czech Republic': '🇨🇿',
+      Slovakia: '🇸🇰',
+      Hungary: '🇭🇺',
+      Romania: '🇷🇴',
+      Bulgaria: '🇧🇬',
+      Croatia: '🇭🇷',
+      Serbia: '🇷🇸',
+      Slovenia: '🇸🇮',
+      'Bosnia and Herzegovina': '🇧🇦',
+      Montenegro: '🇲🇪',
+      'North Macedonia': '🇲🇰',
+      Albania: '🇦🇱',
+      Greece: '🇬🇷',
+      Turkey: '🇹🇷',
+      Cyprus: '🇨🇾',
+      Malta: '🇲🇹',
+      Portugal: '🇵🇹',
+      Ireland: '🇮🇪',
+      Iceland: '🇮🇸',
+      Norway: '🇳🇴',
+      Sweden: '🇸🇪',
+      Finland: '🇫🇮',
+      Denmark: '🇩🇰',
+      Estonia: '🇪🇪',
+      Latvia: '🇱🇻',
+      Lithuania: '🇱🇹',
+      Ukraine: '🇺🇦',
+      Belarus: '🇧🇾',
+      Moldova: '🇲🇩',
+      Georgia: '🇬🇪',
+      Armenia: '🇦🇲',
+      Azerbaijan: '🇦🇿',
+      Kazakhstan: '🇰🇿',
+      Uzbekistan: '🇺🇿',
+      Turkmenistan: '🇹🇲',
+      Kyrgyzstan: '🇰🇬',
+      Tajikistan: '🇹🇯',
+      Afghanistan: '🇦🇫',
+      Pakistan: '🇵🇰',
+      Bangladesh: '🇧🇩',
+      'Sri Lanka': '🇱🇰',
+      Nepal: '🇳🇵',
+      Bhutan: '🇧🇹',
+      Myanmar: '🇲🇲',
+      Thailand: '🇹🇭',
+      Vietnam: '🇻🇳',
+      Laos: '🇱🇦',
+      Cambodia: '🇰🇭',
+      Malaysia: '🇲🇾',
+      Singapore: '🇸🇬',
+      Indonesia: '🇮🇩',
+      Philippines: '🇵🇭',
+      Brunei: '🇧🇳',
+      'South Korea': '🇰🇷',
+      'North Korea': '🇰🇵',
+      Mongolia: '🇲🇳',
+      Taiwan: '🇹🇼',
+      'Hong Kong': '🇭🇰',
+      Macau: '🇲🇴',
+      Israel: '🇮🇱',
+      Palestine: '🇵🇸',
+      Jordan: '🇯🇴',
+      Lebanon: '🇱🇧',
+      Syria: '🇸🇾',
+      Iraq: '🇮🇶',
+      Iran: '🇮🇷',
+      Kuwait: '🇰🇼',
+      'Saudi Arabia': '🇸🇦',
+      Bahrain: '🇧🇭',
+      Qatar: '🇶🇦',
+      'United Arab Emirates': '🇦🇪',
+      Oman: '🇴🇲',
+      Yemen: '🇾🇪',
+      Egypt: '🇪🇬',
+      Libya: '🇱🇾',
+      Tunisia: '🇹🇳',
+      Algeria: '🇩🇿',
+      Morocco: '🇲🇦',
+      Sudan: '🇸🇩',
+      'South Sudan': '🇸🇸',
+      Ethiopia: '🇪🇹',
+      Eritrea: '🇪🇷',
+      Djibouti: '🇩🇯',
+      Somalia: '🇸🇴',
+      Kenya: '🇰🇪',
+      Uganda: '🇺🇬',
+      Tanzania: '🇹🇿',
+      Rwanda: '🇷🇼',
+      Burundi: '🇧🇮',
+      'Democratic Republic of the Congo': '🇨🇩',
+      'Republic of the Congo': '🇨🇬',
+      'Central African Republic': '🇨🇫',
+      Cameroon: '🇨🇲',
+      Chad: '🇹🇩',
+      Niger: '🇳🇪',
+      Nigeria: '🇳🇬',
+      Benin: '🇧🇯',
+      Togo: '🇹🇬',
+      Ghana: '🇬🇭',
+      'Burkina Faso': '🇧🇫',
+      Mali: '🇲🇱',
+      Senegal: '🇸🇳',
+      Mauritania: '🇲🇷',
+      Gambia: '🇬🇲',
+      'Guinea-Bissau': '🇬🇼',
+      Guinea: '🇬🇳',
+      'Sierra Leone': '🇸🇱',
+      Liberia: '🇱🇷',
+      'Ivory Coast': '🇨🇮',
+      'South Africa': '🇿🇦',
+      Namibia: '🇳🇦',
+      Botswana: '🇧🇼',
+      Zimbabwe: '🇿🇼',
+      Zambia: '🇿🇲',
+      Malawi: '🇲🇼',
+      Mozambique: '🇲🇿',
+      Madagascar: '🇲🇬',
+      Mauritius: '🇲🇺',
+      Seychelles: '🇸🇨',
+      Comoros: '🇰🇲',
+      'Cape Verde': '🇨🇻',
+      'São Tomé and Príncipe': '🇸🇹',
+      'Equatorial Guinea': '🇬🇶',
+      Gabon: '🇬🇦',
+      Angola: '🇦🇴',
+      Lesotho: '🇱🇸',
+      Eswatini: '🇸🇿',
+      'New Zealand': '🇳🇿',
+      'Papua New Guinea': '🇵🇬',
+      Fiji: '🇫🇯',
+      'Solomon Islands': '🇸🇧',
+      Vanuatu: '🇻🇺',
+      Samoa: '🇼🇸',
+      Tonga: '🇹🇴',
+      Tuvalu: '🇹🇻',
+      Kiribati: '🇰🇮',
+      Nauru: '🇳🇷',
+      Palau: '🇵🇼',
+      'Marshall Islands': '🇲🇭',
+      Micronesia: '🇫🇲',
+    };
+
+    return countryFlags[country] || '🌍';
+  };
+
   // Get all authors with their favorite books, sorted by favorite count
   const authorsWithBooks = useMemo(() => {
     return authors
@@ -76,24 +251,60 @@ const AuthorsRoute = () => {
     item,
   }: {
     item: (typeof authorsWithBooks)[0];
-  }) => (
-    <View>
-      <View style={styles.authorCard}>
-        <View style={styles.authorInfo}>
-          <Text style={styles.authorName}>{item.authorName}</Text>
-          <View style={styles.countsContainer}>
-            <Text style={styles.bookCount}>{item.books.length}</Text>
-            <Text style={styles.totalCount}>/ {item.totalBooksCount}</Text>
+  }) => {
+    const currentYear = new Date().getFullYear();
+    const author = authors.find(a => a.id === item.authorId);
+    const authorAge = author ? currentYear - author.birthYear : 0;
+
+    const totalAwards = author?.awards || 0;
+    const hasInternationalName =
+      author?.nationality && author.nationality !== 'United States';
+    const genreMatch = item.books.filter(
+      book => book.genre === author?.primaryGenre,
+    ).length;
+
+    const sortedBooks = [...item.books].sort(
+      (a, b) =>
+        new Date(b.publishedDate).getTime() -
+        new Date(a.publishedDate).getTime(),
+    );
+    const newestBook = sortedBooks[0];
+    const oldestBook = sortedBooks[sortedBooks.length - 1];
+
+    return (
+      <View>
+        <View style={styles.authorCard}>
+          <View style={styles.authorInfo}>
+            <Text style={styles.authorName}>{item.authorName}</Text>
+            <View style={styles.countsContainer}>
+              <Text style={styles.bookCount}>{item.books.length}</Text>
+              <Text style={styles.totalCount}>/ {item.totalBooksCount}</Text>
+            </View>
           </View>
+          <Text style={styles.authorStats}>
+            Age: {authorAge} | Awards: {totalAwards} | Genre matches:{' '}
+            {genreMatch}
+          </Text>
+          {hasInternationalName && (
+            <Text style={styles.nationality}>
+              {getCountryFlag(author?.nationality || '')} {author?.nationality}
+            </Text>
+          )}
+          {newestBook && (
+            <Text style={styles.bookRange}>
+              Newest: {new Date(newestBook.publishedDate).getFullYear()} -
+              Oldest: {new Date(oldestBook.publishedDate).getFullYear()}
+            </Text>
+          )}
+        </View>
+        <View style={styles.booksList}>
+          {item.books.map(book => (
+            <BookListItem key={book.id} id={book.id} />
+          ))}
         </View>
       </View>
-      <View style={styles.booksList}>
-        {item.books.map(book => (
-          <BookListItem key={book.id} id={book.id} />
-        ))}
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <FlatList
@@ -101,6 +312,11 @@ const AuthorsRoute = () => {
       renderItem={renderAuthorWithBooks}
       keyExtractor={item => item.authorId}
       contentContainerStyle={{paddingVertical: 8}}
+      removeClippedSubviews={false}
+      initialNumToRender={50}
+      maxToRenderPerBatch={30}
+      windowSize={20}
+      updateCellsBatchingPeriod={50}
     />
   );
 };
@@ -244,5 +460,20 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     lineHeight: 22,
+  },
+  authorStats: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  bookRange: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  nationality: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
   },
 });

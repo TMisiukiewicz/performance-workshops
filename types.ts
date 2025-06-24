@@ -2,6 +2,7 @@ export interface Book {
   id: string;
   title: string;
   authorId: string;
+  genre: string;
   publishedDate: string;
   lastRead: string;
 }
@@ -9,6 +10,11 @@ export interface Book {
 export interface Author {
   id: string;
   name: string;
+  birthYear: number;
+  nationality: string;
+  primaryGenre: string;
+  awards: number;
+  yearsActive: number;
 }
 
 export interface Comment {
