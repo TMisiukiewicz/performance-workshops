@@ -1,12 +1,7 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useAppSelector, useAppDispatch} from '../hooks';
-import {
-  selectBookById,
-  selectAuthorById,
-  selectCommentsByBookId,
-  toggleFavorite,
-} from '../store';
+import {selectNormalizedBookById, toggleFavorite} from '../store';
 import {formatDate} from '../utils';
 
 interface BookListItemProps {
@@ -14,14 +9,11 @@ interface BookListItemProps {
   favoriteBookIds: string[];
 }
 
-const BookListItem = ({id, favoriteBookIds}: BookListItemProps) => {
+const BookListItem = memo(({id, favoriteBookIds}: BookListItemProps) => {
   const dispatch = useAppDispatch();
-  const book = useAppSelector(state => selectBookById(state, id));
-  const authorName = useAppSelector(
-    state => selectAuthorById(state, book?.authorId ?? '')?.name,
-  );
-  const comments = useAppSelector(state => selectCommentsByBookId(state, id));
-  const lastComment = comments[comments.length - 1];
+
+  // Single selector call - all data is denormalized and ready to use
+  const book = useAppSelector(state => selectNormalizedBookById(state, id));
 
   const isFavorite = favoriteBookIds.includes(id);
 
@@ -29,21 +21,25 @@ const BookListItem = ({id, favoriteBookIds}: BookListItemProps) => {
     dispatch(toggleFavorite(id));
   };
 
+  if (!book) {
+    return null;
+  }
+
   return (
     <View style={styles.card}>
       <View style={styles.info}>
-        <Text style={styles.title}>{book?.title}</Text>
-        <Text style={styles.author}>{authorName}</Text>
+        <Text style={styles.title}>{book.title}</Text>
+        <Text style={styles.author}>{book.authorName}</Text>
         <Text style={styles.date}>
           Published:{' '}
-          {book?.publishedDate ? formatDate(book.publishedDate) : 'Unknown'}
+          {book.publishedDate ? formatDate(book.publishedDate) : 'Unknown'}
         </Text>
         <Text style={styles.lastRead}>
-          Last read: {book?.lastRead ? formatDate(book.lastRead) : 'Never'}
+          Last read: {book.lastRead ? formatDate(book.lastRead) : 'Never'}
         </Text>
         <Text style={styles.comment}>
-          {lastComment?.author}: {lastComment?.content?.slice(0, 30)}
-          {lastComment?.content?.length > 30 ? '…' : ''}
+          {book.lastComment?.author}: {book.lastComment?.content?.slice(0, 30)}
+          {(book.lastComment?.content?.length || 0) > 30 ? '…' : ''}
         </Text>
       </View>
 
@@ -54,7 +50,7 @@ const BookListItem = ({id, favoriteBookIds}: BookListItemProps) => {
       </TouchableOpacity>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {
