@@ -5,16 +5,16 @@ import {
   selectBookById,
   selectAuthorById,
   selectCommentsByBookId,
+  selectIsBookFavorite,
   toggleFavorite,
 } from '../store';
 import {formatDate} from '../utils';
 
 interface BookListItemProps {
   id: string;
-  favoriteBookIds: string[];
 }
 
-const BookListItem = ({id, favoriteBookIds}: BookListItemProps) => {
+const BookListItem = ({id}: BookListItemProps) => {
   const dispatch = useAppDispatch();
   const book = useAppSelector(state => selectBookById(state, id));
   const authorName = useAppSelector(
@@ -22,8 +22,7 @@ const BookListItem = ({id, favoriteBookIds}: BookListItemProps) => {
   );
   const comments = useAppSelector(state => selectCommentsByBookId(state, id));
   const lastComment = comments[comments.length - 1];
-
-  const isFavorite = favoriteBookIds.includes(id);
+  const isFavorite = useAppSelector(state => selectIsBookFavorite(state, id));
 
   const handleToggleFavorite = () => {
     dispatch(toggleFavorite(id));
@@ -120,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookListItem;
+export default React.memo(BookListItem);

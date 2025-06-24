@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useCallback} from 'react';
 import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {selectBooks, selectAuthors} from '../store';
@@ -12,6 +12,10 @@ export default function HomeScreen() {
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
   );
+
+  const renderItem = useCallback(({item}: {item: string}) => {
+    return <BookListItem id={item} />;
+  }, []);
 
   const favoritesProcessingData = useMemo(() => {
     const favoriteBooks = favoriteBookIds
@@ -79,9 +83,7 @@ export default function HomeScreen() {
       </Text>
       <FlatList
         data={filteredBookIds}
-        renderItem={({item}) => (
-          <BookListItem id={item} favoriteBookIds={favoriteBookIds} />
-        )}
+        renderItem={renderItem}
         keyExtractor={item => item}
         contentContainerStyle={{paddingVertical: 8}}
         initialNumToRender={500}

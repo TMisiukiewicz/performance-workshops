@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {View, Text, FlatList, StyleSheet} from 'react-native';
 import TabView, {SceneMap} from 'react-native-bottom-tabs';
 import {useAppSelector} from '../hooks';
@@ -9,6 +9,10 @@ const BooksRoute = () => {
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
   );
+
+  const renderItem = useCallback(({item}: {item: string}) => {
+    return <BookListItem id={item} />;
+  }, []);
 
   if (favoriteBookIds.length === 0) {
     return (
@@ -25,9 +29,7 @@ const BooksRoute = () => {
   return (
     <FlatList
       data={favoriteBookIds}
-      renderItem={({item}) => (
-        <BookListItem id={item} favoriteBookIds={favoriteBookIds} />
-      )}
+      renderItem={renderItem}
       keyExtractor={item => item}
       contentContainerStyle={{paddingVertical: 8}}
     />
@@ -301,11 +303,7 @@ const AuthorsRoute = () => {
         </View>
         <View style={styles.booksList}>
           {item.books.map(book => (
-            <BookListItem
-              key={book.id}
-              id={book.id}
-              favoriteBookIds={favoriteBookIds}
-            />
+            <BookListItem key={book.id} id={book.id} />
           ))}
         </View>
       </View>
