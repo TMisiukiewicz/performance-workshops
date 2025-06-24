@@ -1,21 +1,24 @@
-import React, {memo} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useAppSelector, useAppDispatch} from '../hooks';
-import {selectNormalizedBookById, toggleFavorite} from '../store';
+import {
+  selectIsBookFavorite,
+  selectNormalizedBookById,
+  toggleFavorite,
+} from '../store';
 import {formatDate} from '../utils';
 
 interface BookListItemProps {
   id: string;
-  favoriteBookIds: string[];
 }
 
-const BookListItem = memo(({id, favoriteBookIds}: BookListItemProps) => {
+const BookListItem = ({id}: BookListItemProps) => {
   const dispatch = useAppDispatch();
 
   // Single selector call - all data is denormalized and ready to use
   const book = useAppSelector(state => selectNormalizedBookById(state, id));
 
-  const isFavorite = favoriteBookIds.includes(id);
+  const isFavorite = useAppSelector(state => selectIsBookFavorite(state, id));
 
   const handleToggleFavorite = () => {
     dispatch(toggleFavorite(id));
@@ -50,7 +53,7 @@ const BookListItem = memo(({id, favoriteBookIds}: BookListItemProps) => {
       </TouchableOpacity>
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -116,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookListItem;
+export default React.memo(BookListItem);
