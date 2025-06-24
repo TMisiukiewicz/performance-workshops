@@ -1,45 +1,51 @@
 import React, {useState, useMemo, useCallback} from 'react';
 import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
-import {selectNormalizedBooks} from '../store';
+import {selectNormalizedBooks, selectAllBookIds} from '../store';
 import BookListItem from '../components/BookListItem';
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const normalizedBooks = useAppSelector(selectNormalizedBooks);
+  const allBookIds = useAppSelector(selectAllBookIds);
 
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
   );
 
-  const renderItem = useCallback(({item}: {item: string}) => {
-    return <BookListItem id={item} />;
-  }, []);
+  const renderItem = useCallback(
+    ({item}: {item: string}) => {
+      const book = normalizedBooks[item];
+      const isFavorite = favoriteBookIds.includes(item);
+
+      return <BookListItem book={book} isFavorite={isFavorite} />;
+    },
+    [normalizedBooks, favoriteBookIds],
+  );
 
   const filteredBookIds = useMemo(() => {
     if (!search.trim()) {
-      return normalizedBooks.map(book => book.id);
+      return allBookIds;
     }
     const lower = search.toLowerCase();
-    return normalizedBooks
-      .filter(book => {
-        return (
-          book.title.toLowerCase().includes(lower) ||
-          book.authorName.toLowerCase().includes(lower)
-        );
-      })
-      .map(book => book.id);
-  }, [search, normalizedBooks]);
+    return allBookIds.filter(bookId => {
+      const book = normalizedBooks[bookId];
+      return (
+        book.title.toLowerCase().includes(lower) ||
+        book.authorName.toLowerCase().includes(lower)
+      );
+    });
+  }, [search, allBookIds, normalizedBooks]);
 
   const bookStats = useMemo(() => {
     const stats = {
-      total: normalizedBooks.length,
+      total: allBookIds.length,
       filtered: filteredBookIds.length,
       searchActive: !!search.trim(),
       favorites: favoriteBookIds.length,
     };
     return stats;
-  }, [normalizedBooks, filteredBookIds, search, favoriteBookIds]);
+  }, [allBookIds, filteredBookIds, search, favoriteBookIds]);
 
   return (
     <View style={styles.flex1}>

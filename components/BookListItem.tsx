@@ -1,27 +1,21 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {useAppSelector, useAppDispatch} from '../hooks';
-import {
-  selectIsBookFavorite,
-  selectNormalizedBookById,
-  toggleFavorite,
-} from '../store';
+import {useAppDispatch} from '../hooks';
+import {toggleFavorite, NormalizedBook} from '../store';
 import {formatDate} from '../utils';
 
 interface BookListItemProps {
-  id: string;
+  book: NormalizedBook | undefined;
+  isFavorite: boolean;
 }
 
-const BookListItem = ({id}: BookListItemProps) => {
+const BookListItem = ({book, isFavorite}: BookListItemProps) => {
   const dispatch = useAppDispatch();
 
-  // Single selector call - all data is denormalized and ready to use
-  const book = useAppSelector(state => selectNormalizedBookById(state, id));
-
-  const isFavorite = useAppSelector(state => selectIsBookFavorite(state, id));
-
   const handleToggleFavorite = () => {
-    dispatch(toggleFavorite(id));
+    if (book) {
+      dispatch(toggleFavorite(book.id));
+    }
   };
 
   if (!book) {
