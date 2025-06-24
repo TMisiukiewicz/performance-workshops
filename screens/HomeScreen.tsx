@@ -79,7 +79,9 @@ export default function HomeScreen() {
       </Text>
       <FlatList
         data={filteredBookIds}
-        renderItem={({item}) => <BookListItem id={item} />}
+        renderItem={({item}) => (
+          <BookListItem id={item} favoriteBookIds={favoriteBookIds} />
+        )}
         keyExtractor={item => item}
         contentContainerStyle={{paddingVertical: 8}}
         initialNumToRender={500}
