@@ -67,7 +67,7 @@ Go to [https://speedscope.app](https://speedscope.app) in your browser.
 
 ### 1. Checkout `perf/exercise-2` branch
 
-### 2. Drag and drop `main.apk` file from `/artifacts` folder to Android emulator
+### 2. Drag and drop `exercise-2.apk` file from `/artifacts` folder to Android emulator
 
 ### 3. Repeat all the rest of the steps from main
 
