@@ -11,10 +11,8 @@ Learn to profile React Native app performance in release builds using `react-nat
 
 ## Setup
 
-### 2. Build Release Version
-```bash
-# Android
-npx react-native run-android --variant=release
+### 1. Drag and drop `main.apk` file from `/artifacts` folder to Android emulator
+<attached video>
 
 ## Recording a Trace
 
@@ -33,21 +31,21 @@ After stopping profiling, the trace is saved to the device's Downloads folder.
 
 ### 2. Download Using react-native-release-profiler CLI
 ```bash
-# Replace com.yourapp.package with your actual app bundle ID
-npx react-native-release-profiler --fromDownload --appId com.performanceworkshops
+npm run downloadtrace:android
 ```
 
 ## Symbolication & Processing
 
-### 1. Using CLI (Recommended)
-The CLI automatically processes and symbolicates traces:
+### 1. Generate sourcemaps
+
 ```bash
-npx react-native-release-profiler --fromDownload --appId com.performanceworkshops
+npm run bundle:android
 ```
 
-### 2. Manual Processing for iOS/Web
+### 2. Symbolicate trace
+
 ```bash
-npx react-native-release-profiler --local ./path/to/profile.json
+npx react-native-release-profiler --fromDownload --appId com.performanceworkshops
 ```
 
 ### 3. What Symbolication Does
@@ -55,26 +53,35 @@ npx react-native-release-profiler --local ./path/to/profile.json
 - Maps minified/obfuscated code back to source
 - Adds source map information for better debugging
 
-## Analyzing Traces in SpeedScope
+## Analyzing Trace in SpeedScope
 
 ### 1. Open SpeedScope
 Go to [https://speedscope.app](https://speedscope.app) in your browser.
 
 ### 2. Load Your Trace
 - Click "Browse" or drag the processed trace file
-- SpeedScope supports multiple formats (Chrome tracing, Hermes profiles, etc.)
+
+### 3. Write down key findings
+
+## Measurements after fixes
+
+### 1. Checkout `perf/exercise-2` branch
+
+### 2. Drag and drop `main.apk` file from `/artifacts` folder to Android emulator
+
+### 3. Repeat all the rest of the steps from main
+
+### 4. Write down findings and compare them with baseline measurements
   
 ## Tips & Best Practices
 
 ### Recording
-- Profile 10-30 second sessions (longer = larger files)
+- Narrow down the problem you are profiling, but leave some profiling space before and after
 - Focus on specific user interactions
-- Record both cold and warm app states
 
 ### Analysis
 - Compare before/after optimization traces
 - Focus on self-time for actual bottlenecks
-- Look at call patterns, not just individual slow functions
 - Test fixes with new traces
 
 ### Optimization Areas
