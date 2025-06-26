@@ -1,0 +1,16 @@
+appId: com.performanceworkshops
+---
+- launchApp
+- assertVisible: "Login"
+- tapOn: "Login"
+- assertVisible: "Books"
+- tapOn:
+    id: "search-input"
+- inputText: "of"
+- assertVisible: "The Portrait of a Lady"
+- swipe:
+    direction: UP
+    duration: 10
+- swipe:
+    direction: UP
+    duration: 10

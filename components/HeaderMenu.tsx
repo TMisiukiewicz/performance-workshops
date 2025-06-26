@@ -20,6 +20,7 @@ const HeaderMenu = () => {
   return (
     <View>
       <TouchableOpacity
+        testID="header-menu-button"
         style={styles.headerButton}
         onPress={() => setMenuVisible(true)}
         activeOpacity={0.7}>
@@ -38,7 +39,7 @@ const HeaderMenu = () => {
                 style={styles.menuItem}
                 onPress={() => {
                   setMenuVisible(false);
-                  navigation.navigate('Profile');
+                  navigation.navigate('Favorites');
                 }}>
                 <Text style={styles.menuItemText}>Favorites</Text>
               </TouchableOpacity>

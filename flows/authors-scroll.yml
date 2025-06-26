@@ -1,0 +1,20 @@
+appId: com.performanceworkshops
+---
+- launchApp
+- assertVisible: "Login"
+- tapOn: "Login"
+- assertVisible: "Books"
+- tapOn:
+    id: "header-menu-button"
+- assertVisible: "Favorites"
+- tapOn: "Favorites"
+- assertVisible: "Favorite books and authors"
+- tapOn: "Authors"
+- assertVisible:
+    id: "authors-list"
+- swipe:
+    direction: UP
+    duration: 10
+- swipe:
+    direction: UP
+    duration: 10

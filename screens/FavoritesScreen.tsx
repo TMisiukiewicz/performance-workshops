@@ -312,6 +312,7 @@ const AuthorsRoute = () => {
 
   return (
     <FlatList
+      testID="authors-list"
       data={authorsWithBooks}
       renderItem={renderAuthorWithBooks}
       keyExtractor={item => item.authorId}
@@ -334,27 +335,23 @@ const FavoritesScreen = () => {
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
   );
-  const books = useAppSelector(selectBooks);
-
-  const favoriteAuthorIds = useMemo(() => {
-    const authorIds = favoriteBookIds
-      .map(bookId => {
-        const book = books.find(b => b.id === bookId);
-        return book?.authorId;
-      })
-      .filter((id): id is string => Boolean(id));
-    return [...new Set(authorIds)];
-  }, [favoriteBookIds, books]);
 
   const [index, setIndex] = useState(0);
 
   // Update route titles when counts change
   const updatedRoutes = useMemo(
     () => [
-      {key: 'books', title: `Books (${favoriteBookIds.length})`},
-      {key: 'authors', title: `Authors (${favoriteAuthorIds.length})`},
+      {
+        key: 'books',
+        title: `Books (${favoriteBookIds.length})`,
+      },
+      {
+        key: 'authors',
+        title: 'Authors',
+        testID: 'authors-tab',
+      },
     ],
-    [favoriteBookIds.length, favoriteAuthorIds.length],
+    [favoriteBookIds.length],
   );
 
   return (
