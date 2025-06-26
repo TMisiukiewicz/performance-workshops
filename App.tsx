@@ -67,9 +67,9 @@ function AppContent() {
             }}
           />
           <Stack.Screen
-            name="Profile"
+            name="Favorites"
             component={FavoritesScreen}
-            options={{title: 'Favorites'}}
+            options={{title: 'Favorite books and authors'}}
           />
           <Stack.Screen name="Settings" component={SettingsScreen} />
         </Stack.Navigator>
