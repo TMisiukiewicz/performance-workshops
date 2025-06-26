@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback, useEffect} from 'react';
 import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {selectNormalizedBooks, selectAllBookIds} from '../store';
@@ -6,8 +6,18 @@ import BookListItem from '../components/BookListItem';
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const normalizedBooks = useAppSelector(selectNormalizedBooks);
   const allBookIds = useAppSelector(selectAllBookIds);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
@@ -24,28 +34,32 @@ export default function HomeScreen() {
   );
 
   const filteredBookIds = useMemo(() => {
-    if (!search.trim()) {
+    if (!debouncedSearch.trim()) {
       return allBookIds;
     }
-    const lower = search.toLowerCase();
+    const lower = debouncedSearch.toLowerCase();
     return allBookIds.filter(bookId => {
       const book = normalizedBooks[bookId];
+      // Add null check to prevent crashes
+      if (!book) {
+        return false;
+      }
       return (
         book.title.toLowerCase().includes(lower) ||
         book.authorName.toLowerCase().includes(lower)
       );
     });
-  }, [search, allBookIds, normalizedBooks]);
+  }, [debouncedSearch, allBookIds, normalizedBooks]);
 
   const bookStats = useMemo(() => {
     const stats = {
       total: allBookIds.length,
       filtered: filteredBookIds.length,
-      searchActive: !!search.trim(),
+      searchActive: !!debouncedSearch.trim(),
       favorites: favoriteBookIds.length,
     };
     return stats;
-  }, [allBookIds, filteredBookIds, search, favoriteBookIds]);
+  }, [allBookIds, filteredBookIds, debouncedSearch, favoriteBookIds]);
 
   return (
     <View style={styles.flex1}>
