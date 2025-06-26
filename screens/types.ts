@@ -1,6 +1,6 @@
 export type RootStackParamList = {
   Start: undefined;
   Home: undefined;
-  Profile: undefined;
+  Favorites: undefined;
   Settings: undefined;
 };

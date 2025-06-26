@@ -18,11 +18,8 @@ Learn to measure FPS, CPU and RAM usage using [Flashlight](https://flashlight.de
 
 ## Part 1: Baseline Measurements
 
-### Step 1: Prepare the App State
-1. **Build and install release version**:
-   ```bash
-   npx react-native run-android --variant=release
-   ```
+### 1. Drag and drop `main.apk` file from `/artifacts` folder to Android emulator
+<attached video>
 
 2. **Set up test data**:
    - Navigate to Home screen
