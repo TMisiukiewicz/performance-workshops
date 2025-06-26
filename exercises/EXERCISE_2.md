@@ -28,20 +28,15 @@ In this exercise, we'll learn how to use Chrome DevTools to profile JavaScript p
 1. In the opened DevTools window, click on the "Performance" tab
 2. You'll see options to record performance profiles
 
-### Step 5: Record a Performance Profile
-1. Click the record button (circle icon) in the Performance tab
-2. Interact with your app to trigger the performance issue you want to analyze:
-3. Click the stop button to end recording
-4. Download the recorded profile
+## Part 3: Record the trace
 
-## Part 3: Exercise
-
-### Scenario: Optimize the navigation between two screens
+### Step 5: Record a profile trace
 1. Open the app (cold start)
 2. Start recording in Chrome DevTools
 3. Press "Login"
 4. Stop recording once it navigated to the `HomeScreen`
 5. Download the profile trace
+   
 **IF PROFILING IN CHROME DOES NOT WORK FOR YOU**
 1. Open the app (cold start)
 2. Open three-dot menu and go to Settings
@@ -52,7 +47,7 @@ In this exercise, we'll learn how to use Chrome DevTools to profile JavaScript p
 7. Once navigated to the `HomeScreen`, open FAB again and stop recording
 8. Open terminal, type `open `, hit `<cmd+v>` and hit Enter 
 
-### Analyze the profile trace
+### Step 6: Analyze the profile trace
 1. Open https://www.speedscope.app/
 2. Upload recorded profile trace
 3. Analyze it to see where does it spend the most of time
@@ -62,19 +57,19 @@ In this exercise, we'll learn how to use Chrome DevTools to profile JavaScript p
 - **Long Tasks**: long JavaScript execution blocks
 - **Frequent Re-renders**: Multiple renders of the same components
 
-## Part 4: Optimize the code
+## Part 4: Optimize the code and re-profile
 
 ### Step 6: Implement Optimizations
-1. **Checkout branch <branch_with_solution>**
+1. **Checkout branch `perf/exercise-2`**
 
-### Step 7: Re-profile and Compare
-1. After implementing optimizations, repeat the profiling process
-2. Compare the new profile with the original
-3. Look for improvements in:
+### Step 7: Re-profile
+1. Repeat the profiling process
+
+### Step 8: Compare the results with the baseline
+1. Compare the new profile with the original
+2. Look for improvements in:
    - Reduced JavaScript execution time
    - Fewer long tasks
-
-## Part 5: Advanced Profiling Techniques
 
 ## Troubleshooting
 
@@ -82,16 +77,6 @@ In this exercise, we'll learn how to use Chrome DevTools to profile JavaScript p
 - **DevTools not connecting**: Check that Metro is running
 - **Port forwarding not working**: Verify ports are correctly configured in `chrome://inspect`
 - **Profile data missing**: Ensure you're interacting with the app during recording
-
-## Exercise Deliverables
-
-1. **Before Profile**: Screenshot of performance profile showing bottlenecks
-2. **Optimized Code**: Show the specific code changes made
-3. **After Profile**: Screenshot showing performance improvements
-4. **Analysis Report**: Brief summary of:
-   - Issues identified
-   - Optimizations implemented
-   - Performance gains achieved
 
 ## Resources
 - [Chrome DevTools Performance Documentation](https://developer.chrome.com/docs/devtools/performance/)
