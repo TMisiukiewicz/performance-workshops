@@ -1,67 +1,51 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useCallback} from 'react';
 import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
-import {selectBooks, selectAuthors} from '../store';
+import {selectNormalizedBooks, selectAllBookIds} from '../store';
 import BookListItem from '../components/BookListItem';
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
-  const books = useAppSelector(selectBooks);
-  const authors = useAppSelector(selectAuthors);
+  const normalizedBooks = useAppSelector(selectNormalizedBooks);
+  const allBookIds = useAppSelector(selectAllBookIds);
 
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
   );
 
-  const favoritesProcessingData = useMemo(() => {
-    const favoriteBooks = favoriteBookIds
-      .map(id => books.find(book => book.id === id))
-      .filter(Boolean);
+  const renderItem = useCallback(
+    ({item}: {item: string}) => {
+      const book = normalizedBooks[item];
+      const isFavorite = favoriteBookIds.includes(item);
 
-    const favoriteAuthors = favoriteBooks.map(book => {
-      const author = authors.find(a => a.id === book?.authorId);
-      return author?.name
-        .toLowerCase()
-        .split('')
-        .reverse()
-        .join('')
-        .toUpperCase();
-    });
-
-    const favoriteStats = {
-      count: favoriteBookIds.length,
-      authorsSet: new Set(favoriteBooks.map(b => b?.authorId)),
-      processedAt: Date.now(),
-    };
-
-    return {favoriteBooks, favoriteAuthors, favoriteStats};
-  }, [favoriteBookIds, books, authors]);
+      return <BookListItem book={book} isFavorite={isFavorite} />;
+    },
+    [normalizedBooks, favoriteBookIds],
+  );
 
   const filteredBookIds = useMemo(() => {
     if (!search.trim()) {
-      return books.map(book => book.id);
+      return allBookIds;
     }
     const lower = search.toLowerCase();
-    return books
-      .filter(book => {
-        const author = authors.find(a => a.id === book.authorId);
-        return (
-          book.title.toLowerCase().includes(lower) ||
-          (author && author.name.toLowerCase().includes(lower))
-        );
-      })
-      .map(book => book.id);
-  }, [search, books, authors]);
+    return allBookIds.filter(bookId => {
+      const book = normalizedBooks[bookId];
+      return (
+        book.title.toLowerCase().includes(lower) ||
+        book.authorName.toLowerCase().includes(lower)
+      );
+    });
+  }, [search, allBookIds, normalizedBooks]);
 
   const bookStats = useMemo(() => {
     const stats = {
-      total: books.length,
+      total: allBookIds.length,
       filtered: filteredBookIds.length,
       searchActive: !!search.trim(),
-      favorites: favoritesProcessingData.favoriteStats.count,
+      favorites: favoriteBookIds.length,
     };
     return stats;
-  }, [books, filteredBookIds, search, favoritesProcessingData]);
+  }, [allBookIds, filteredBookIds, search, favoriteBookIds]);
 
   return (
     <View style={styles.flex1}>
@@ -79,9 +63,7 @@ export default function HomeScreen() {
       </Text>
       <FlatList
         data={filteredBookIds}
-        renderItem={({item}) => (
-          <BookListItem id={item} favoriteBookIds={favoriteBookIds} />
-        )}
+        renderItem={renderItem}
         keyExtractor={item => item}
         contentContainerStyle={{paddingVertical: 8}}
         initialNumToRender={500}

@@ -1,49 +1,42 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {useAppSelector, useAppDispatch} from '../hooks';
-import {
-  selectBookById,
-  selectAuthorById,
-  selectCommentsByBookId,
-  toggleFavorite,
-} from '../store';
+import {useAppDispatch} from '../hooks';
+import {toggleFavorite, NormalizedBook} from '../store';
 import {formatDate} from '../utils';
 
 interface BookListItemProps {
-  id: string;
-  favoriteBookIds: string[];
+  book: NormalizedBook | undefined;
+  isFavorite: boolean;
 }
 
-const BookListItem = ({id, favoriteBookIds}: BookListItemProps) => {
+const BookListItem = ({book, isFavorite}: BookListItemProps) => {
   const dispatch = useAppDispatch();
-  const book = useAppSelector(state => selectBookById(state, id));
-  const authorName = useAppSelector(
-    state => selectAuthorById(state, book?.authorId ?? '')?.name,
-  );
-  const comments = useAppSelector(state => selectCommentsByBookId(state, id));
-  const lastComment = comments[comments.length - 1];
-
-  const isFavorite = favoriteBookIds.includes(id);
 
   const handleToggleFavorite = () => {
-    dispatch(toggleFavorite(id));
+    if (book) {
+      dispatch(toggleFavorite(book.id));
+    }
   };
+
+  if (!book) {
+    return null;
+  }
 
   return (
     <View style={styles.card}>
       <View style={styles.info}>
-        <Text style={styles.title}>{book?.title}</Text>
-        <Text style={styles.author}>{authorName}</Text>
+        <Text style={styles.title}>{book.title}</Text>
+        <Text style={styles.author}>{book.authorName}</Text>
         <Text style={styles.date}>
           Published:{' '}
-          {book?.publishedDate ? formatDate(book.publishedDate) : 'Unknown'}
+          {book.publishedDate ? formatDate(book.publishedDate) : 'Unknown'}
         </Text>
         <Text style={styles.lastRead}>
-          Last read: {book?.lastRead ? formatDate(book.lastRead) : 'Never'}
+          Last read: {book.lastRead ? formatDate(book.lastRead) : 'Never'}
         </Text>
         <Text style={styles.comment}>
-          {lastComment?.author}: {lastComment?.content?.slice(0, 30)}
-          {lastComment?.content?.length > 30 ? '…' : ''}
+          {book.lastComment?.author}: {book.lastComment?.content?.slice(0, 30)}
+          {(book.lastComment?.content?.length || 0) > 30 ? '…' : ''}
         </Text>
       </View>
 
@@ -120,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookListItem;
+export default React.memo(BookListItem);
