@@ -72,6 +72,7 @@ export default function HomeScreen() {
         }}
         placeholder="Search by book or author"
         style={styles.input}
+        testID="search-input"
       />
       <Text style={styles.centered}>
         Showing {bookStats.filtered} of {bookStats.total} books | ❤️{' '}
