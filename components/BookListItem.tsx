@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useAppSelector, useAppDispatch} from '../hooks';
 import {
@@ -8,6 +8,7 @@ import {
   toggleFavorite,
 } from '../store';
 import {formatDate} from '../utils';
+import performanceUtils from '../performance-utils';
 
 interface BookListItemProps {
   id: string;
@@ -23,9 +24,14 @@ const BookListItem = ({id, favoriteBookIds}: BookListItemProps) => {
   const comments = useAppSelector(state => selectCommentsByBookId(state, id));
   const lastComment = comments[comments.length - 1];
 
-  const isFavorite = favoriteBookIds.includes(id);
+  const isFavorite = useMemo(() => {
+    const isBookFavorite = favoriteBookIds.includes(id);
+    performanceUtils.stop('toggle-favorite');
+    return isBookFavorite;
+  }, [favoriteBookIds, id]);
 
   const handleToggleFavorite = () => {
+    performanceUtils.start('toggle-favorite');
     dispatch(toggleFavorite(id));
   };
 

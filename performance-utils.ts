@@ -19,6 +19,12 @@ const performanceUtils = {
       const endMarkName = `${name}-end`;
       const measureName = name;
 
+      // Check if the start mark exists
+      const startMarks = performance.getEntriesByName(startMarkName);
+      if (startMarks.length === 0) {
+        return;
+      }
+
       // Mark the end time
       performance.mark(endMarkName);
 
