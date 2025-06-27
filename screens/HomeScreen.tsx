@@ -1,8 +1,9 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {selectBooks, selectAuthors} from '../store';
 import BookListItem from '../components/BookListItem';
+import performanceUtils from '../performance-utils';
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
@@ -12,6 +13,11 @@ export default function HomeScreen() {
   const favoriteBookIds = useAppSelector(
     state => state.favorites.favoriteBookIds,
   );
+
+  // Stop measuring navigation performance when HomeScreen mounts
+  useEffect(() => {
+    performanceUtils.stop('app-login');
+  }, []);
 
   const favoritesProcessingData = useMemo(() => {
     const favoriteBooks = favoriteBookIds
@@ -64,7 +70,11 @@ export default function HomeScreen() {
   }, [books, filteredBookIds, search, favoritesProcessingData]);
 
   return (
-    <View style={styles.flex1}>
+    <View
+      style={styles.flex1}
+      onLayout={() => {
+        performanceUtils.start('app-home-render');
+      }}>
       <TextInput
         value={search}
         onChangeText={text => {
