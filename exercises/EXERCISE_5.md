@@ -1,450 +1,148 @@
-# Exercise 5: Performance Testing with Reassure
+# Exercise 5: Performance Regression Testing with Reassure
 
-In this exercise, you'll learn how to use **Reassure** - a performance testing companion for React Native that helps you measure and track performance regressions over time.
+## Overview
+In this exercise, you'll use **Reassure** to measure React Native component performance and detect regressions. You'll establish baseline measurements, test performance improvements, and analyze statistical results to understand the impact of code changes.
 
-## What is Reassure?
+## Why Use Reassure?
+- **Automated regression detection**: Catch performance issues before code review
+- **Statistical analysis**: Get confidence intervals and significance testing
+- **Real data testing**: Test with your actual app data (5000 books, 3000 authors)
+- **Component-focused**: Measure React component render performance specifically
 
-Reassure allows you to:
-- Measure render performance of React Native components
-- Measure execution time of functions
-- Compare performance between different versions of your code
-- Generate statistical reports with confidence intervals
-- Detect performance regressions before they reach production
+## Prerequisites
+- Reassure already set up and configured
+- Performance tests already written in `__perf__/` directory
+- Large mock datasets available in `/mocks` folder
 
-## Setup
+## Part 1: Baseline Measurements
 
-### 1. Install Reassure
-
+### Step 1: Run Baseline Performance Tests
 ```bash
-npm install --save-dev @callstack/reassure
-```
-
-### 2. Create Performance Test Directory
-
-```bash
-mkdir __perf__
-```
-
-### 3. Add Performance Test Scripts
-
-Add these scripts to your `package.json`:
-
-```json
-{
-  "scripts": {
-    "test:perf": "reassure",
-    "test:perf:measure": "reassure --measure",
-    "test:perf:compare": "reassure --compare"
-  }
-}
-```
-
-### 4. Configure Reassure
-
-Create `reassure.config.js` in your project root:
-
-```javascript
-module.exports = {
-  runs: 20,
-  warmupRuns: 3,
-  outputFile: '.reassure/current.perf',
-  verbose: true,
-  testingLibrary: 'react-native',
-};
-```
-
-## Test Implementation
-
-### Test 1: BookListItem Component Performance
-
-Create `__perf__/BookListItem.perf.test.tsx`:
-
-```tsx
-import React from 'react';
-import {measureRenders} from '@callstack/reassure';
-import {Provider} from 'react-redux';
-import {store} from '../store';
-import BookListItem from '../components/BookListItem';
-
-// Mock data setup
-const mockBook = {
-  id: '1',
-  title: 'The Great Gatsby',
-  authorId: 'author1',
-  publishedDate: '1925-04-10',
-  lastRead: '2024-01-15',
-};
-
-const mockAuthor = {
-  id: 'author1',
-  name: 'F. Scott Fitzgerald',
-};
-
-const mockComments = [
-  {
-    id: 'comment1',
-    bookId: '1',
-    author: 'John Doe',
-    content: 'Amazing book! Really enjoyed the symbolism and themes.',
-  },
-];
-
-// Mock the selectors
-jest.mock('../store', () => {
-  const actualStore = jest.requireActual('../store');
-  return {
-    ...actualStore,
-    selectBookById: jest.fn(() => mockBook),
-    selectAuthorById: jest.fn(() => mockAuthor),
-    selectCommentsByBookId: jest.fn(() => mockComments),
-  };
-});
-
-const TestWrapper = ({children}: {children: React.ReactNode}) => (
-  <Provider store={store}>{children}</Provider>
-);
-
-describe('BookListItem Performance', () => {
-  test('measures BookListItem render performance', async () => {
-    await measureRenders(
-      <BookListItem id="1" favoriteBookIds={[]} />,
-      {
-        wrapper: TestWrapper,
-        runs: 20,
-        warmupRuns: 3,
-      }
-    );
-  });
-
-  test('measures BookListItem performance with favorite state', async () => {
-    await measureRenders(
-      <BookListItem id="1" favoriteBookIds={['1']} />,
-      {
-        wrapper: TestWrapper,
-        runs: 20,
-        warmupRuns: 3,
-      }
-    );
-  });
-
-  test('measures BookListItem with user interaction', async () => {
-    await measureRenders(
-      <BookListItem id="1" favoriteBookIds={[]} />,
-      {
-        wrapper: TestWrapper,
-        runs: 15,
-        warmupRuns: 2,
-        scenario: async (view) => {
-          const favoriteButton = view?.getByRole('button');
-          if (favoriteButton) {
-            // Simulate user tapping the favorite button
-            await favoriteButton.props.onPress();
-          }
-        },
-      }
-    );
-  });
-});
-```
-
-### Test 2: HomeScreen Performance
-
-Create `__perf__/HomeScreen.perf.test.tsx`:
-
-```tsx
-import React from 'react';
-import {measureRenders} from '@callstack/reassure';
-import {Provider} from 'react-redux';
-import {NavigationContainer} from '@react-navigation/native';
-import {store} from '../store';
-import HomeScreen from '../screens/HomeScreen';
-
-// Mock react-navigation
-jest.mock('@react-navigation/native', () => ({
-  ...jest.requireActual('@react-navigation/native'),
-  useNavigation: () => ({
-    navigate: jest.fn(),
-  }),
-}));
-
-const TestWrapper = ({children}: {children: React.ReactNode}) => (
-  <Provider store={store}>
-    <NavigationContainer>
-      {children}
-    </NavigationContainer>
-  </Provider>
-);
-
-describe('HomeScreen Performance', () => {
-  test('measures HomeScreen initial render', async () => {
-    await measureRenders(
-      <HomeScreen />,
-      {
-        wrapper: TestWrapper,
-        runs: 15,
-        warmupRuns: 2,
-      }
-    );
-  });
-
-  test('measures HomeScreen with search interaction', async () => {
-    await measureRenders(
-      <HomeScreen />,
-      {
-        wrapper: TestWrapper,
-        runs: 10,
-        warmupRuns: 2,
-        scenario: async (view) => {
-          const searchInput = view?.getByPlaceholderText('Search by book or author');
-          if (searchInput) {
-            // Simulate typing in search
-            await searchInput.props.onChangeText('gatsby');
-            await searchInput.props.onChangeText('gatsby great');
-            await searchInput.props.onChangeText('');
-          }
-        },
-      }
-    );
-  });
-});
-```
-
-### Test 3: Function Performance
-
-Create `__perf__/utils.perf.test.tsx`:
-
-```tsx
-import {measureFunction, measureAsyncFunction} from '@callstack/reassure';
-import {formatDate} from '../utils';
-
-// Mock some heavy computation functions
-const heavyDataProcessing = (data: any[]) => {
-  // Simulate expensive operations
-  return data
-    .map(item => ({...item, processed: true}))
-    .filter(item => item.processed)
-    .sort((a, b) => a.id.localeCompare(b.id));
-};
-
-const asyncDataFetch = async () => {
-  // Simulate async operation (ensure this is properly mocked in tests)
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve({data: 'mock data'});
-    }, 10);
-  });
-};
-
-describe('Function Performance Tests', () => {
-  test('measures formatDate function performance', async () => {
-    const testDate = '2024-01-15T10:30:00Z';
-    
-    await measureFunction(
-      () => formatDate(testDate),
-      {
-        runs: 100,
-        warmupRuns: 10,
-      }
-    );
-  });
-
-  test('measures heavy data processing', async () => {
-    const mockData = Array.from({length: 1000}, (_, i) => ({
-      id: `item-${i}`,
-      value: Math.random(),
-    }));
-
-    await measureFunction(
-      () => heavyDataProcessing(mockData),
-      {
-        runs: 20,
-        warmupRuns: 3,
-      }
-    );
-  });
-
-  test('measures async function performance', async () => {
-    await measureAsyncFunction(
-      async () => await asyncDataFetch(),
-      {
-        runs: 30,
-        warmupRuns: 5,
-      }
-    );
-  });
-});
-```
-
-### Test 4: Redux Selector Performance
-
-Create `__perf__/selectors.perf.test.tsx`:
-
-```tsx
-import {measureFunction} from '@callstack/reassure';
-import {selectCommentsByBookId, selectBookById} from '../store';
-
-// Mock state
-const mockState = {
-  books: Array.from({length: 1000}, (_, i) => ({
-    id: `book-${i}`,
-    title: `Book ${i}`,
-    authorId: `author-${i % 100}`,
-    publishedDate: '2024-01-01',
-    lastRead: '2024-01-15',
-  })),
-  authors: Array.from({length: 100}, (_, i) => ({
-    id: `author-${i}`,
-    name: `Author ${i}`,
-  })),
-  comments: Array.from({length: 10000}, (_, i) => ({
-    id: `comment-${i}`,
-    bookId: `book-${i % 1000}`,
-    author: `User ${i}`,
-    content: `This is comment ${i}`,
-  })),
-  settings: {
-    devPanelEnabled: false,
-    fabEnabled: false,
-  },
-  favorites: {
-    favoriteBookIds: [],
-  },
-};
-
-describe('Selector Performance Tests', () => {
-  test('measures selectBookById performance', async () => {
-    await measureFunction(
-      () => selectBookById(mockState as any, 'book-500'),
-      {
-        runs: 1000,
-        warmupRuns: 100,
-      }
-    );
-  });
-
-  test('measures selectCommentsByBookId performance', async () => {
-    await measureFunction(
-      () => selectCommentsByBookId(mockState as any, 'book-500'),
-      {
-        runs: 500,
-        warmupRuns: 50,
-      }
-    );
-  });
-});
-```
-
-## Running the Tests
-
-### Step 1: Create Baseline Measurements
-
-```bash
-npm run test:perf:measure
+npm run test:perf:baseline
 ```
 
 This will:
-- Run all performance tests
-- Create baseline measurements in `.reassure/current.perf`
-- Show performance statistics in the console
+- Run all performance tests multiple times with statistical analysis
+- Test BookListItem component rendering
+- Test HomeScreen rendering with 5000 books
+- Test search performance with realistic queries
+- Save baseline measurements to `.reassure/baseline.perf`
 
-### Step 2: Make Code Changes
+**Note**: This can take  several minutes due to the large dataset - be patient and ideally do not use your Mac for stability reasons!
 
-Now make some performance-related changes to your code. For example:
+### Step 2: Analyze Baseline Results
+Look at the console output and note:
+- Which components take the longest to render?
+- How long does HomeScreen initial render take with 5000 books?
+- How does search performance compare to initial render?
+- What's the render count for each test?
 
-1. **Optimize BookListItem**: Add `React.memo` to prevent unnecessary re-renders
-2. **Optimize selectors**: Use `createSelector` for better memoization
-3. **Add expensive operations**: Intentionally slow down a function to see regression
 
-### Step 3: Compare Performance
+## Part 2: Testing Performance Improvements
 
+### Step 3: Checkout `perf/exercise-5`
+
+
+### Step 4: Run Current Measurements and Compare
 ```bash
-# Copy current measurements as baseline
-cp .reassure/current.perf .reassure/baseline.perf
-
-# Run tests again with your changes
-npm run test:perf:measure
-
-# Compare the results
-npm run test:perf:compare
+npm run test:perf
 ```
 
-## Understanding the Results
+This will:
+- Run the same performance tests with the optimized code
+- Automatically compare against the baseline
+- Generate a detailed performance comparison report
+- Show statistical significance of changes
 
-Reassure will output:
+## Part 3: Analyze the Results
 
-### 1. Console Statistics
+### Step 5: Review the Performance Report
+
+Look for these sections in the output:
+
+#### Significant Changes To Duration
+These are performance changes that are statistically significant and worth investigating:
 ```
-✓ BookListItem render performance (2.3ms ± 0.5ms)
-  - Renders: 1.2 ± 0.1
-  - Duration: 2.3ms ± 0.5ms
+HomeScreen initial render performance [render]: 
+45.2 ms → 32.1 ms (-13.1 ms, -29.0%) | 1 → 1
 ```
 
-### 2. Comparison Report
-After running compare, you'll see:
-- **Significant Changes**: Performance changes that are statistically significant
-- **Meaningless Changes**: Changes within normal variance
-- **Added/Removed Scenarios**: New or deleted tests
+#### Meaningless Changes To Duration  
+These are changes within normal variance - not actionable:
+```
+BookListItem performance [render]: 
+1.3 ms → 1.4 ms (+0.1 ms, +7.7%) | 1 → 1
+```
 
-### 3. Markdown Report
-A detailed report is generated showing:
-- Statistical confidence intervals
-- Performance improvement/regression percentages
-- Recommendations for investigation
+#### Render Count Changes
+Changes in how many times components render:
+```
+HomeScreen search performance [render]: 
+12.3 ms → 8.7 ms (-3.6 ms, -29.3%) | 3 → 1
+```
 
-## Best Practices
+### Step 6: Understanding the Results
 
-### 1. Test Realistic Scenarios
-- Use actual data structures and sizes
-- Test user interactions, not just static renders
-- Include edge cases (empty lists, large datasets)
+**Reading the Format:**
+- `45.2 ms → 32.1 ms` = Before and after render times
+- `(-13.1 ms, -29.0%)` = Absolute and percentage change
+- `| 1 → 1` = Render count before and after
 
-### 2. Proper Mocking
-- Mock external dependencies (AsyncStorage, navigation)
-- Keep mocks consistent between test runs
-- Mock network calls and async operations
+**What to Look For:**
+- **Negative percentages** = Performance improvements (faster)
+- **Positive percentages** = Performance regressions (slower)
+- **Render count changes** = Optimization of re-renders
 
-### 3. Statistical Validity
-- Use sufficient runs (20+ for renders, 100+ for functions)
-- Include warmup runs to eliminate JIT compilation effects
-- Remove outliers to get consistent results
+### Step 7: Document Your Findings
 
-### 4. Continuous Monitoring
-- Set up automated performance testing
-- Track performance over time
-- Set performance budgets and alerts
+Answer these questions based on the report:
 
-## Exercises to Try
+1. **What was the biggest performance improvement?**
+   - Which test showed the largest time reduction?
+   - What percentage improvement was achieved?
 
-1. **Add React.memo** to BookListItem and measure the difference
-2. **Optimize the search filter** in HomeScreen with debouncing
-3. **Create a slow selector** and then optimize it with proper memoization
-4. **Test FlatList performance** with different `initialNumToRender` values
-5. **Measure app startup time** by testing the initial screen render
+2. **Were there any performance regressions?**
+   - Did any tests become slower?
+   - Are they statistically significant or just noise?
 
-## Troubleshooting
+3. **How did search performance change?**
+   - Compare search vs initial render improvements
+   - Did render counts change for search operations?
 
-### Common Issues
+4. **What optimizations were most effective?**
+   - Which scenarios benefited most from the changes?
+   - Are the improvements consistent across different test scenarios?
 
-1. **Inconsistent Results**: Increase warmup runs and test runs
-2. **Mocking Errors**: Ensure all external dependencies are properly mocked
-3. **Memory Leaks**: Use `beforeEach/afterEach` to clean up between tests
-4. **Timing Issues**: Use `act()` wrapper for async operations
+## Part 4: Exploring the Optimizations
 
-### Performance Investigation
+### Step 8: Check What Changed
+```bash
+git diff main..perf/exercise-5
+```
 
-When you find regressions:
-1. Check the specific test scenario
-2. Profile the component using React DevTools
-3. Look for unnecessary re-renders
-4. Check for memory leaks
-5. Analyze bundle size changes
+### Step 9: Correlate Code Changes to Performance Impact
 
-## Next Steps
+For each optimization you find:
+- Which performance test would be affected?
+- Does the measured improvement match your expectations?
+- Are there any surprising results?
 
-After completing this exercise:
-- Integrate performance testing into your development workflow
-- Set up automated performance regression detection
-- Create performance budgets for your app
-- Monitor real-world performance metrics
+## Key Takeaways
 
-Remember: Performance testing is most valuable when done consistently over time, not just as a one-off measurement!
+**Statistical Significance Matters:**
+- Only focus on "Significant Changes" - ignore meaningless variance
+- Reassure uses proper statistical analysis to filter noise
+
+**Real Data Testing:**
+- Testing with 5000 books gives realistic performance insights
+- Small optimizations can have big impacts at scale
+
+**Multiple Metrics:**
+- Render duration and render count are both important
+- Sometimes render count matters more than duration
+
+## 📚 Additional Resources
+
+- [Reassure Documentation](https://callstack.github.io/reassure/)
+- [React.memo Documentation](https://react.dev/reference/react/memo)
+- [useMemo Best Practices](https://react.dev/reference/react/useMemo)

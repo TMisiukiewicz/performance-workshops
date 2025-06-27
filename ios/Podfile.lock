@@ -1359,6 +1359,30 @@ PODS:
     - SDWebImageSVGCoder (>= 1.7.0)
     - SwiftUIIntrospect (~> 1.0)
     - Yoga
+  - react-native-performance (5.1.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-release-profiler (0.4.0):
     - DoubleConversion
     - glog
@@ -1955,6 +1979,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-bottom-tabs (from `../node_modules/react-native-bottom-tabs`)
+  - react-native-performance (from `../node_modules/react-native-performance`)
   - react-native-release-profiler (from `../node_modules/react-native-release-profiler`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -2081,6 +2106,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-bottom-tabs:
     :path: "../node_modules/react-native-bottom-tabs"
+  react-native-performance:
+    :path: "../node_modules/react-native-performance"
   react-native-release-profiler:
     :path: "../node_modules/react-native-release-profiler"
   react-native-safe-area-context:
@@ -2198,6 +2225,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 3dec40b2c7bc9b2a0e89079adecec8553623b28a
   React-microtasksnativemodule: 5b347f4a4b6e2451a55301ed935bcc5261ba87cf
   react-native-bottom-tabs: c1ed3aca093803c2860fe170df065d3161479f81
+  react-native-performance: f0471c84eda0f6625bd42a1f515b1b216f284b12
   react-native-release-profiler: 7294b95f3d545a30f61091123d2678d04ea9a1ca
   react-native-safe-area-context: 8cf8caf5fc0f5a5d3581b650579af9c85c16be04
   React-NativeModulesApple: e8e6b7992257fe68f77d5ce39f34384cd6226edf

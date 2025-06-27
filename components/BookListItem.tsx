@@ -9,6 +9,7 @@ import {
   toggleFavorite,
 } from '../store';
 import {formatDate} from '../utils';
+import performanceUtils from '../performance-utils';
 
 interface BookListItemProps {
   id: string;
@@ -22,9 +23,14 @@ const BookListItem = ({id}: BookListItemProps) => {
   );
   const comments = useAppSelector(state => selectCommentsByBookId(state, id));
   const lastComment = comments[comments.length - 1];
-  const isFavorite = useAppSelector(state => selectIsBookFavorite(state, id));
+  const isFavorite = useAppSelector(state => {
+    const isBookFavorite = selectIsBookFavorite(state, id);
+    performanceUtils.stop('toggle-favorite');
+    return isBookFavorite;
+  });
 
   const handleToggleFavorite = () => {
+    performanceUtils.start('toggle-favorite');
     dispatch(toggleFavorite(id));
   };
 

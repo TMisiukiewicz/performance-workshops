@@ -1,8 +1,9 @@
-import React, {useState, useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback, useEffect} from 'react';
 import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {selectBooks, selectAuthors} from '../store';
 import BookListItem from '../components/BookListItem';
+import performanceUtils from '../performance-utils';
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
@@ -15,6 +16,11 @@ export default function HomeScreen() {
 
   const renderItem = useCallback(({item}: {item: string}) => {
     return <BookListItem id={item} />;
+  }, []);
+
+  // Stop measuring navigation performance when HomeScreen mounts
+  useEffect(() => {
+    performanceUtils.stop('app-login');
   }, []);
 
   const favoritesProcessingData = useMemo(() => {
@@ -42,11 +48,16 @@ export default function HomeScreen() {
   }, [favoriteBookIds, books, authors]);
 
   const filteredBookIds = useMemo(() => {
+    performanceUtils.start('search-filter');
+
     if (!search.trim()) {
-      return books.map(book => book.id);
+      const allBookIds = books.map(book => book.id);
+      performanceUtils.stop('search-filter');
+      return allBookIds;
     }
+
     const lower = search.toLowerCase();
-    return books
+    const filteredBooks = books
       .filter(book => {
         const author = authors.find(a => a.id === book.authorId);
         return (
@@ -55,6 +66,9 @@ export default function HomeScreen() {
         );
       })
       .map(book => book.id);
+
+    performanceUtils.stop('search-filter');
+    return filteredBooks;
   }, [search, books, authors]);
 
   const bookStats = useMemo(() => {
@@ -68,7 +82,11 @@ export default function HomeScreen() {
   }, [books, filteredBookIds, search, favoritesProcessingData]);
 
   return (
-    <View style={styles.flex1}>
+    <View
+      style={styles.flex1}
+      onLayout={() => {
+        performanceUtils.start('app-home-render');
+      }}>
       <TextInput
         value={search}
         onChangeText={text => {
