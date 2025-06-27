@@ -1,8 +1,9 @@
-import React, {useState, useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback, useEffect} from 'react';
 import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {selectNormalizedBooks, selectAllBookIds} from '../store';
 import BookListItem from '../components/BookListItem';
+import performanceUtils from '../performance-utils';
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
@@ -13,28 +14,37 @@ export default function HomeScreen() {
     state => state.favorites.favoriteBookIds,
   );
 
+  useEffect(() => {
+    performanceUtils.stop('app-login');
+  }, []);
+
   const renderItem = useCallback(
     ({item}: {item: string}) => {
       const book = normalizedBooks[item];
-      const isFavorite = favoriteBookIds.includes(item);
 
-      return <BookListItem book={book} isFavorite={isFavorite} />;
+      return <BookListItem book={book} />;
     },
-    [normalizedBooks, favoriteBookIds],
+    [normalizedBooks],
   );
 
   const filteredBookIds = useMemo(() => {
+    performanceUtils.start('search-filter');
+
     if (!search.trim()) {
       return allBookIds;
     }
+
     const lower = search.toLowerCase();
-    return allBookIds.filter(bookId => {
+    const filteredBooks = allBookIds.filter(bookId => {
       const book = normalizedBooks[bookId];
-      return (
+      const isMatchingBook =
         book.title.toLowerCase().includes(lower) ||
-        book.authorName.toLowerCase().includes(lower)
-      );
+        book.authorName.toLowerCase().includes(lower);
+
+      return isMatchingBook;
     });
+    performanceUtils.stop('search-filter');
+    return filteredBooks;
   }, [search, allBookIds, normalizedBooks]);
 
   const bookStats = useMemo(() => {
@@ -56,6 +66,7 @@ export default function HomeScreen() {
         }}
         placeholder="Search by book or author"
         style={styles.input}
+        testID="search-input"
       />
       <Text style={styles.centered}>
         Showing {bookStats.filtered} of {bookStats.total} books | ❤️{' '}

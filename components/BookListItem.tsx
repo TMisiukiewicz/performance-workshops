@@ -1,20 +1,25 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {useAppDispatch} from '../hooks';
-import {toggleFavorite, NormalizedBook} from '../store';
+import {useAppDispatch, useAppSelector} from '../hooks';
+import {toggleFavorite, NormalizedBook, selectIsBookFavorite} from '../store';
 import {formatDate} from '../utils';
+import performanceUtils from '../performance-utils';
 
 interface BookListItemProps {
   book: NormalizedBook | undefined;
-  isFavorite: boolean;
 }
 
-const BookListItem = ({book, isFavorite}: BookListItemProps) => {
+const BookListItem = ({book}: BookListItemProps) => {
   const dispatch = useAppDispatch();
+  const isFavorite = useAppSelector(state =>
+    selectIsBookFavorite(state, book?.id ?? ''),
+  );
 
   const handleToggleFavorite = () => {
     if (book) {
+      performanceUtils.start('toggle-favorite');
       dispatch(toggleFavorite(book.id));
+      performanceUtils.stop('toggle-favorite');
     }
   };
 

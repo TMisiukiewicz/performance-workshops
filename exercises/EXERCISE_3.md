@@ -9,12 +9,12 @@ Learn to profile React Native app performance in release builds using `react-nat
 - Catch production-specific issues
 - Profile on actual user devices
 
-## Setup
+## Part 1: Setup
 
-### 1. Drag and drop `main.apk` file from `/artifacts` folder to Android emulator
+### Step 1: Drag and drop `main.apk` file from `/artifacts` folder to Android emulator
 <attached video>
 
-## Recording a Trace
+## Part 2: Recording a Trace
 
 1. Open the app (cold start)
 2. Open three-dot menu and go to Settings
@@ -24,54 +24,35 @@ Learn to profile React Native app performance in release builds using `react-nat
 6. Press "Login"
 7. Once navigated to the `HomeScreen`, open FAB again and stop recording
 
-## Downloading Trace from Android Emulator
+## Part 3: Downloading Trace from Android Emulator
 
-### 1. Locate the Trace File
-After stopping profiling, the trace is saved to the device's Downloads folder.
-
-### 2. Download Using react-native-release-profiler CLI
-```bash
-npm run downloadtrace:android
-```
-
-## Symbolication & Processing
-
-### 1. Generate sourcemaps
+### Step 2: Generate sourcemaps
 
 ```bash
 npm run bundle:android
 ```
 
-### 2. Symbolicate trace
-
+### Step 3. Download profile trace using react-native-release-profiler CLI
 ```bash
-npx react-native-release-profiler --fromDownload --appId com.performanceworkshops
+npm run downloadtrace:android
 ```
 
-### 3. What Symbolication Does
-- Converts memory addresses to readable function names
-- Maps minified/obfuscated code back to source
-- Adds source map information for better debugging
+## Part 4: Analyzing Trace in SpeedScope
 
-## Analyzing Trace in SpeedScope
+### Step 4: Using Speedscope
+1. Go to [https://speedscope.app](https://speedscope.app) in your browser.
+2. Click "Browse" or drag the processed trace file
+3. Write down key findings
 
-### 1. Open SpeedScope
-Go to [https://speedscope.app](https://speedscope.app) in your browser.
+## Part 5: Measurements after fixes
 
-### 2. Load Your Trace
-- Click "Browse" or drag the processed trace file
+### Step 5: Checkout `perf/exercise-2` branch
 
-### 3. Write down key findings
+### Step 6: Drag and drop `exercise-2.apk` file from `/artifacts` folder to Android emulator
 
-## Measurements after fixes
+### Step 7: Repeat all the rest of the steps from main
 
-### 1. Checkout `perf/exercise-2` branch
-
-### 2. Drag and drop `exercise-2.apk` file from `/artifacts` folder to Android emulator
-
-### 3. Repeat all the rest of the steps from main
-
-### 4. Write down findings and compare them with baseline measurements
+### Step 8: Write down findings and compare them with baseline measurements
   
 ## Tips & Best Practices
 
@@ -83,13 +64,6 @@ Go to [https://speedscope.app](https://speedscope.app) in your browser.
 - Compare before/after optimization traces
 - Focus on self-time for actual bottlenecks
 - Test fixes with new traces
-
-### Optimization Areas
-- Component rendering performance
-- List/FlatList optimizations
-- Image loading and caching
-- Navigation transitions
-- Data fetching patterns
 
 ## Troubleshooting
 

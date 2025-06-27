@@ -197,8 +197,10 @@ export const selectNormalizedBookById = (
 ): NormalizedBook | undefined => state.normalizedBooks[id];
 
 // Helper selector to get all book IDs as array
-export const selectAllBookIds = (state: RootState): string[] =>
-  Object.keys(state.normalizedBooks);
+export const selectAllBookIds = createSelector(
+  [selectNormalizedBooks],
+  normalizedBooks => Object.keys(normalizedBooks),
+);
 
 /** Normalized Authors selectors - Fast access with no lookups */
 export const selectNormalizedAuthors = (
