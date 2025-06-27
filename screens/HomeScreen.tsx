@@ -44,11 +44,16 @@ export default function HomeScreen() {
   }, [favoriteBookIds, books, authors]);
 
   const filteredBookIds = useMemo(() => {
+    performanceUtils.start('search-filter');
+
     if (!search.trim()) {
-      return books.map(book => book.id);
+      const allBookIds = books.map(book => book.id);
+      performanceUtils.stop('search-filter');
+      return allBookIds;
     }
+
     const lower = search.toLowerCase();
-    return books
+    const filteredBooks = books
       .filter(book => {
         const author = authors.find(a => a.id === book.authorId);
         return (
@@ -57,6 +62,9 @@ export default function HomeScreen() {
         );
       })
       .map(book => book.id);
+
+    performanceUtils.stop('search-filter');
+    return filteredBooks;
   }, [search, books, authors]);
 
   const bookStats = useMemo(() => {
