@@ -2,8 +2,14 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {View, Text, FlatList, StyleSheet} from 'react-native';
 import TabView, {SceneMap} from 'react-native-bottom-tabs';
 import {useAppSelector} from '../hooks';
-import {selectBooks, selectAuthors} from '../store';
+import {selectBooks, selectAuthors, selectNormalizedBookById} from '../store';
 import BookListItem from '../components/BookListItem';
+
+// Wrapper component to connect id to book object
+const BookListItemWrapper = ({id}: {id: string}) => {
+  const book = useAppSelector(state => selectNormalizedBookById(state, id));
+  return <BookListItem book={book} />;
+};
 
 const BooksRoute = () => {
   const favoriteBookIds = useAppSelector(
@@ -11,7 +17,7 @@ const BooksRoute = () => {
   );
 
   const renderItem = useCallback(({item}: {item: string}) => {
-    return <BookListItem id={item} />;
+    return <BookListItemWrapper id={item} />;
   }, []);
 
   if (favoriteBookIds.length === 0) {
@@ -303,7 +309,7 @@ const AuthorsRoute = () => {
         </View>
         <View style={styles.booksList}>
           {item.books.map(book => (
-            <BookListItem key={book.id} id={book.id} />
+            <BookListItemWrapper key={book.id} id={book.id} />
           ))}
         </View>
       </View>
