@@ -3,6 +3,7 @@ import {View, Text, FlatList, TextInput, StyleSheet} from 'react-native';
 import {useAppSelector} from '../hooks';
 import {selectNormalizedBooks, selectAllBookIds} from '../store';
 import BookListItem from '../components/BookListItem';
+import performanceUtils from '../performance-utils';
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
@@ -23,32 +24,37 @@ export default function HomeScreen() {
     state => state.favorites.favoriteBookIds,
   );
 
+  useEffect(() => {
+    performanceUtils.stop('app-login');
+  }, []);
+
   const renderItem = useCallback(
     ({item}: {item: string}) => {
       const book = normalizedBooks[item];
-      const isFavorite = favoriteBookIds.includes(item);
 
-      return <BookListItem book={book} isFavorite={isFavorite} />;
+      return <BookListItem book={book} />;
     },
-    [normalizedBooks, favoriteBookIds],
+    [normalizedBooks],
   );
 
   const filteredBookIds = useMemo(() => {
+    performanceUtils.start('search-filter');
+
     if (!debouncedSearch.trim()) {
       return allBookIds;
     }
+
     const lower = debouncedSearch.toLowerCase();
-    return allBookIds.filter(bookId => {
+    const filteredBooks = allBookIds.filter(bookId => {
       const book = normalizedBooks[bookId];
-      // Add null check to prevent crashes
-      if (!book) {
-        return false;
-      }
-      return (
+      const isMatchingBook =
         book.title.toLowerCase().includes(lower) ||
-        book.authorName.toLowerCase().includes(lower)
-      );
+        book.authorName.toLowerCase().includes(lower);
+
+      return isMatchingBook;
     });
+    performanceUtils.stop('search-filter');
+    return filteredBooks;
   }, [debouncedSearch, allBookIds, normalizedBooks]);
 
   const bookStats = useMemo(() => {

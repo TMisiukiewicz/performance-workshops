@@ -70,7 +70,7 @@ const favoriteBookIds = useAppSelector(
 
 ### Step 6: Implement performance improvements
 
-1. **Checkout branch <branch_with_solution>**
+1. **Checkout branch `perf/exercise-1`**
 
 ### Step 7: Record the Favorite action again
 1. **Record a profile trace again**
