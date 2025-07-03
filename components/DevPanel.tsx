@@ -44,7 +44,7 @@ export default function DevPanel({visible, onClose}: DevPanelProps) {
         setIsProfiling(false);
         // Extract directory path without filename
         const dirPath = profilePath.substring(0, profilePath.lastIndexOf('/'));
-        Clipboard.setString(dirPath);
+        Clipboard.setString(`open ${dirPath}`);
         console.log(
           'Profiling stopped. Directory path copied to clipboard:',
           dirPath,
