@@ -15,6 +15,7 @@ This workshop teaches React Native performance optimization through hands-on exe
 Please install dependencies, use npm run android and npm run ios and make sure the app opens properly on both platforms
 4. Flashlight installed: https://docs.flashlight.dev/#installation
 5. Maestro installed: https://github.com/mobile-dev-inc/maestro-docs/blob/main/getting-started/installing-maestro/README.md
+6. Copy this file to your Google Drive: https://docs.google.com/spreadsheets/d/1hYPo508nh1dfvOh0TX2EJP_WzJ53DEwIuj7Qo_iS9Co/edit?gid=0#gid=0
 
 ### Installation
 ```bash
