@@ -35,55 +35,6 @@ npm run ios
 npm run android
 ```
 
-## 📋 Workshop Structure
-
-This workshop consists of 5 progressive exercises, each building on performance concepts:
-
-### Exercise 1: React DevTools Profiling
-**Focus**: Component re-renders and state update performance
-- Learn React DevTools Profiler
-- Analyze "Add to Favorites" performance impact
-- Identify unnecessary re-renders
-- Compare before/after optimizations
-
-**Key Skills**: React Profiler, component analysis, render optimization
-
-### Exercise 2: Chrome DevTools JavaScript Profiling  
-**Focus**: JavaScript execution performance
-- Set up Chrome DevTools with React Native
-- Profile app startup and navigation
-- Identify expensive JavaScript operations
-- Analyze cold start performance
-
-**Key Skills**: Chrome DevTools, JavaScript profiling, startup optimization
-
-### Exercise 3: Production Performance Profiling
-**Focus**: Release build performance analysis
-- Profile performance in production builds with react-native-release-profiler
-- Record and download traces from Android devices
-- Analyze performance with SpeedScope web tool
-- Compare debug vs release performance characteristics
-
-**Key Skills**: Production profiling, trace analysis, release build optimization
-
-### Exercise 4: Mobile Performance Testing with Flashlight
-**Focus**: Real-device performance measurement
-- Measure FPS, CPU, and RAM usage on actual devices
-- Automated performance testing with Maestro flows
-- Statistical performance analysis across multiple runs
-- Performance score tracking and regression detection
-
-**Key Skills**: Mobile performance testing, automated measurements, hardware profiling
-
-### Exercise 5: Automated Performance Testing with Reassure
-**Focus**: Performance regression detection
-- Establish performance baselines
-- Automated performance testing
-- Statistical analysis of performance changes
-- Continuous integration integration
-
-**Key Skills**: Reassure testing, statistical analysis, CI/CD performance gates
-
 ## 🏗️ Project Architecture
 
 ### Core Components
@@ -108,14 +59,6 @@ This workshop consists of 5 progressive exercises, each building on performance 
 ├── flows/                 # Automated UI testing flows
 └── mocks/                 # Large-scale mock data generation
 ```
-
-## 📊 Mock Data System
-
-The workshop uses realistic large-scale data for authentic performance testing:
-
-- **5,000 Books**: Generated with faker.js including titles, authors, dates, and metadata
-- **3,000 Authors**: Realistic author profiles with relationships to books
-- **Comments System**: User comments for each book adding data complexity
 
 ## 🔧 Available Scripts
 
@@ -157,20 +100,6 @@ npm run downloadtrace:android # Download Android performance traces
 - **Favorites System**: Add/remove favorites with state management
 - **Author Information**: Linked author data with relationship queries
 
-## 🧪 Performance Testing
-
-### Reassure Integration
-The project includes comprehensive performance testing with statistical analysis:
-
-```typescript
-// Example performance test
-test('BookListItem performance', async () => {
-  await measureRenders(<BookListItem id="1" favoriteBookIds={[]} />, {
-    wrapper: TestWrapper,
-  });
-});
-```
-
 ## 🔍 Troubleshooting
 
 ### Common Issues
@@ -184,16 +113,6 @@ npm run start --reset-cache
 1. Check `chrome://inspect` port forwarding
 2. Verify Metro is running on port 8081
 3. Restart app and DevTools connection
-
-**Performance tests timing out:**
-- Ensure device/simulator isn't under load
-- Close other applications during testing
-- Use release builds for accurate measurements
-
-**Large dataset performance:**
-- Tests may take several minutes with 5,000 books
-- This is intentional for realistic performance testing
-- Be patient during baseline establishment
 
 ## 📚 Additional Resources
 
