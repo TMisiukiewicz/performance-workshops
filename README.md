@@ -9,9 +9,12 @@ This workshop teaches React Native performance optimization through hands-on exe
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js >= 18
-- React Native development environment ([setup guide](https://reactnative.dev/docs/environment-setup))
-- iOS Simulator or Android Emulator/Device
+1. Installed Xcode and Android Studio
+2. Installed Node.js
+3. Cloned repository
+Please install dependencies, use npm run android and npm run ios and make sure the app opens properly on both platforms
+4. Flashlight installed: https://docs.flashlight.dev/#installation
+5. Maestro installed: https://github.com/mobile-dev-inc/maestro-docs/blob/main/getting-started/installing-maestro/README.md
 
 ### Installation
 ```bash
