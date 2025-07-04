@@ -45,7 +45,7 @@ In this exercise, we'll learn how to use Chrome DevTools to profile JavaScript p
 5. Open FAB and enable performance profiling
 6. Press "Login"
 7. Once navigated to the `HomeScreen`, open FAB again and stop recording
-8. Open terminal, type `open `, hit `<cmd+v>` and hit Enter 
+8. Open terminal, hit `<cmd+v>` and hit Enter - it'll open a folder with recorded trace
 
 ### Step 6: Analyze the profile trace
 1. Open https://www.speedscope.app/

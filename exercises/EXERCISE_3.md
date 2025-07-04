@@ -46,13 +46,11 @@ npm run downloadtrace:android
 
 ## Part 5: Measurements after fixes
 
-### Step 5: Checkout `perf/exercise-2` branch
+### Step 5: Drag and drop `exercise-3.apk` file from `/artifacts` folder to Android emulator
 
-### Step 6: Drag and drop `exercise-2.apk` file from `/artifacts` folder to Android emulator
+### Step 6: Repeat all the rest of the steps from main
 
-### Step 7: Repeat all the rest of the steps from main
-
-### Step 8: Write down findings and compare them with baseline measurements
+### Step 7: Write down findings and compare them with baseline measurements
   
 ## Tips & Best Practices
 
