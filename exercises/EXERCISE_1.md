@@ -74,7 +74,8 @@ const favoriteBookIds = useAppSelector(
 
 ### Step 7: Record the Favorite action again
 1. **Record a profile trace again**
-2. **Download the profile trace**
+2. **Analyze the profile trace. What changed?**
+3. **Download the profile trace**
 
 
 ## Part 5: Compare results from React Profiler
@@ -89,9 +90,7 @@ const favoriteBookIds = useAppSelector(
 After completing this exercise, you should understand:
 
 - How to use React DevTools Profiler effectively
-- The performance impact of state updates in Redux/React
 - Why prop changes cause cascading re-renders
-- The difference between necessary and unnecessary re-renders
 
 ---
 
